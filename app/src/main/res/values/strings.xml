@@ -4,17 +4,28 @@
     <!-- Strings related to main screen -->
     <string name="title_activity_main">HopOnCMU</string>
     <string name="action_join_now">Join Now</string>
-    <string name="logo_content_description">App Logo</string>
 
     <!-- Strings related to login -->
+    <string name="logo_content_description">App Logo</string>
     <string name="title_activity_validate">CMU-Project</string>
     <string name="prompt_ticket_code">Ticket code</string>
     <string name="action_sign_in">Validate</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_ticketCode">This ticket code is too short</string>
+    <string name="error_incorrect_ticketCode">This ticket code is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <!-- Strings related to sign up -->
+    <string name="text_create_account">Create your account</string>
+    <string name="username_input">Choose your username</string>
+    <string name="action_sign_up">Sign up</string>
+    <string name="error_invalid_username">Username can only contain letters</string>
+    <string name="error_occupied_username">This username is already in use</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
