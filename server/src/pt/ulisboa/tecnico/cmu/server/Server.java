@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.*;
 
 import pt.ulisboa.tecnico.cmu.command.Command;
+import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.response.Response;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.User;
@@ -33,13 +34,18 @@ public class Server {
 	private static Question m4_2;
 	private static Question m4_3;
 
+	private static Quiz quiz1;
+	private static Quiz quiz2;
+	private static Quiz quiz3;
+	private static Quiz quiz4;
+
 	private static final int PORT = 9090;
 
-	//keeps a map with: userID:[[answers], [points]]
+	//keeps a map with: userID
 	private static List<User> users = new ArrayList<User>();
 
-	//keeps a map with: monumentID:[questions]
-	private static Map<String, List> quizzes = new HashMap<String, List>();
+	//keeps a map with: monumentID:quiz
+	private static Map<String, Quiz> quizzes = new HashMap<String, Quiz>();
 
 	//keeps a map with: ticketCode:userID
 	private static Map<String, String> tickets = new HashMap<String, String>();
@@ -130,41 +136,14 @@ public class Server {
 	}
 
 	private static void initializeQuizzes(){
-		List<Question> questions =new ArrayList<Question>();
-		questions.add(m1_1);
-		questions.add(m1_2);
-		questions.add(m1_3);
-		quizzes.put("M1", questions);
-		questions.clear();
-		questions.add(m2_1);
-		questions.add(m2_2);
-		questions.add(m2_3);
-		quizzes.put("M2", questions);
-		questions.clear();
-		questions.add(m3_1);
-		questions.add(m3_2);
-		questions.add(m3_3);
-		quizzes.put("M3", questions);
-		questions.clear();
-		questions.add(m4_1);
-		questions.add(m4_2);
-		questions.add(m4_3);
-		quizzes.put("M4", questions);
-	}
-
-	private static void sendM1() {
-
-	}
-
-	private static void sendM2() {
-
-	}
-
-	private static void sendM3() {
-
-	}
-
-	private static void sendM4() {
+		quiz1 = new Quiz("M1", m1_1, m1_2, m1_3);
+		quiz2 = new Quiz("M2", m2_1, m2_2, m2_3);
+		quiz3 = new Quiz("M3", m3_1, m3_2, m3_3);
+		quiz4 = new Quiz("M4", m4_1, m4_2, m4_3);
+		quizzes.put(quiz1.getMonumentID(), quiz1);
+		quizzes.put(quiz2.getMonumentID(), quiz2);
+		quizzes.put(quiz3.getMonumentID(), quiz3);
+		quizzes.put(quiz4.getMonumentID(), quiz4);
 
 	}
 
@@ -178,6 +157,15 @@ public class Server {
 
 	public static List<User> getUsers(){
 		return users;
+	}
+
+	public static Quiz getQuiz(String monumentID){
+		for (Map.Entry<String, Quiz> quiz: quizzes.entrySet()) {
+			if(quiz.getKey().equals(monumentID)){
+				return quiz.getValue();
+			}
+		}
+		return null;
 	}
 
 
