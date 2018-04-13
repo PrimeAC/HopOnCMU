@@ -5,13 +5,12 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
+import java.util.*;
 
 import pt.ulisboa.tecnico.cmu.command.Command;
 import pt.ulisboa.tecnico.cmu.response.Response;
+import pt.ulisboa.tecnico.cmu.data.Question;
+import pt.ulisboa.tecnico.cmu.data.User;
 
 public class Server {
 
@@ -21,21 +20,42 @@ public class Server {
 	//M3 - Padrão dos Descobrimentos
 	//M4 - Castelo de São Jorge
 
+	private static Question m1_1;
+	private static Question m1_2;
+	private static Question m1_3;
+	private static Question m2_1;
+	private static Question m2_2;
+	private static Question m2_3;
+	private static Question m3_1;
+	private static Question m3_2;
+	private static Question m3_3;
+	private static Question m4_1;
+	private static Question m4_2;
+	private static Question m4_3;
+
 	private static final int PORT = 9090;
+
+	//keeps a map with: userID:[[answers], [points]]
+	private static List<User> users = new ArrayList<User>();
+
+	//keeps a map with: monumentID:[questions]
 	private static Map<String, List> quizzes = new HashMap<String, List>();
-	private static Map<String, String[]> quizzesAnswers = new HashMap<String, String[]>();
-	private static List<String[]> m1Quiz = new ArrayList<String[]>();
-	private static List<String[]> m2Quiz = new ArrayList<String[]>();
-	private static List<String[]> m3Quiz = new ArrayList<String[]>();
-	private static List<String[]> m4Quiz = new ArrayList<String[]>();
+
+	//keeps a map with: ticketCode:userID
+	private static Map<String, String> tickets = new HashMap<String, String>();
+
+	/*
+	//for test only
+	private static Map<String, List<String>> userAnswers = new HashMap<String, List<String>>();
+	private static List<String> aux = new ArrayList<String>();*/
 
 	public static void main(String[] args) throws Exception {
 		initializeM1();
 		initializeM2();
 		initializeM3();
 		initializeM4();
-		initializeAnswers();
-		initializeQuiz();
+		initializeQuizzes();
+
 
 		CommandHandlerImpl chi = new CommandHandlerImpl();
 		ServerSocket socket = new ServerSocket(PORT);
@@ -74,41 +94,147 @@ public class Server {
 	}
 
 	private static void initializeM1() {
-		m1Quiz.add(new String[] {"Em que ano começou a construção da Torre de Belém?", "1514", "1515", "1513", "1512"});  //1514
-		m1Quiz.add(new String[] {"Em que ano foi inaugurada a Torre de Belém?", "1514", "1515", "1513", "1519"});  //1519
-		m1Quiz.add(new String[] {"Que outro nome se dá à Torre de Belém?", "Torre de São Vicente", "Torre dos Jerónimos", "Torre Francisco de Arruda", "Torre Cultural de Belém"});  //Torre de sao vicente
+		m1_1 = new Question("Em que ano começou a construção da Torre de Belém?",
+				"1514", "1515", "1513", "1512", "1515");
+		m1_2 = new Question("Em que ano foi inaugurada a Torre de Belém?",
+				"1514", "1515", "1513", "1519", "1519");
+		m1_3 = new Question("Que outro nome se dá à Torre de Belém?",
+				"Torre de São Vicente", "Torre dos Jerónimos", "Torre Francisco de Arruda", "Torre Cultural de Belém", "Torre de São Vicente");
 	}
 
 	private static void initializeM2() {
-		m2Quiz.add(new String[] {"Em que ano começou a construção do Mosteiro dos Jerónimos?", "1510", "1505", "1512", "1502"});  //1502
-		m2Quiz.add(new String[] {"Em que ano foi inaugurado o Mosteiro dos Jerónimos?", "1514", "1515", "1513", "1519"});  //1513
-		m2Quiz.add(new String[] {"Que outro nome se dá ao Mosteiro dos Jerónimos?", "Torre de São Vicente", "Torre dos Jerónimos", "Mosteiro de Santa Maria de Belém", "Mosteiro de Belém"});  //mosteiro de santa maria
+		m2_1 = new Question("Em que ano começou a construção do Mosteiro dos Jerónimos?",
+				"1510", "1505", "1512", "1502","1502");
+		m2_2 = new Question("Em que ano foi inaugurado o Mosteiro dos Jerónimos?",
+				"1514", "1515", "1513", "1519", "1513");
+		m2_3 = new Question("Que outro nome se dá ao Mosteiro dos Jerónimos?",
+				"Torre de São Vicente", "Torre dos Jerónimos", "Mosteiro de Santa Maria de Belém", "Mosteiro de Belém", "Mosteiro de Santa Maria de Belém");
 	}
 
 	private static void initializeM3() {
-		m3Quiz.add(new String[] {"Em que ano foi inaugurado o Padrão dos Descobrimentos original?", "1933", "1940", "1936", "1945"});  //1940
-		m3Quiz.add(new String[] {"Em que ano foi inaugurado o Padrão dos Descobrimentos?", "1953", "1955", "1960", "1950"});  //1960
-		m3Quiz.add(new String[] {"Que outro nome se dá ao Padrão dos Descobrimentos?", "Monumento aos Navegantes", "Torre dos Descobrimentos", "Padrão de Santa Maria de Belém", "Monumento de Belém"});  //Monumento aos Navegantes
+		m3_1 = new Question("Em que ano foi inaugurado o Padrão dos Descobrimentos original?",
+				"1933", "1940", "1936", "1945", "1940");
+		m3_2 = new Question("Em que ano foi inaugurado o Padrão dos Descobrimentos?",
+				"1953", "1955", "1960", "1950", "1960");
+		m3_3 = new Question("Que outro nome se dá ao Padrão dos Descobrimentos?",
+				"Monumento aos Navegantes", "Torre dos Descobrimentos", "Padrão de Santa Maria de Belém", "Monumento de Belém", "Monumento aos Navegantes");
 	}
 
 	private static void initializeM4() {
-		m4Quiz.add(new String[] {"Em que século foi definido o nome do Castelo de São Jorge?", "XIV", "XV", "XVI", "XVII"});  //XIV
-		m4Quiz.add(new String[] {"Qual o rei que definiu o nome do castelo?", "D.João I", "D.Duarte I", "D.João II", "D.Fernando I"});  //D.João I
-		m4Quiz.add(new String[] {"Em que ano foi declarado Monumento Nacional?", "1900", "1905", "1910", "1915"});  //1910
+		m4_1 = new Question("Em que século foi definido o nome do Castelo de São Jorge?",
+				"XIV", "XV", "XVI", "XVII", "XIV");
+		m4_2 = new Question("Qual o rei que definiu o nome do castelo?",
+				"D.João I", "D.Duarte I", "D.João II", "D.Fernando I", "D.João I");
+		m4_3 = new Question("Em que ano foi declarado Monumento Nacional?",
+				"1900", "1905", "1910", "1915", "1910");
+	}
+
+	private static void initializeQuizzes(){
+		List<Question> questions =new ArrayList<Question>();
+		questions.add(m1_1);
+		questions.add(m1_2);
+		questions.add(m1_3);
+		quizzes.put("M1", questions);
+		questions.clear();
+		questions.add(m2_1);
+		questions.add(m2_2);
+		questions.add(m2_3);
+		quizzes.put("M2", questions);
+		questions.clear();
+		questions.add(m3_1);
+		questions.add(m3_2);
+		questions.add(m3_3);
+		quizzes.put("M3", questions);
+		questions.clear();
+		questions.add(m4_1);
+		questions.add(m4_2);
+		questions.add(m4_3);
+		quizzes.put("M4", questions);
+	}
+
+	private static void sendM1() {
+
+	}
+
+	private static void sendM2() {
+
+	}
+
+	private static void sendM3() {
+
+	}
+
+	private static void sendM4() {
+
+	}
+
+	private static boolean usedTicket(String ticketCode) {
+		return tickets.containsKey(ticketCode);
+	}
+
+	private static void createNewUser(String ticketCode, String userID){
+		tickets.put(ticketCode, userID);
+	}
+
+	public static List<User> getUsers(){
+		return users;
 	}
 
 
-	private static void initializeQuiz() {
-		quizzes.put("M1", m1Quiz);
-		quizzes.put("M2", m2Quiz);
-		quizzes.put("M3", m3Quiz);
-		quizzes.put("M4", m4Quiz);	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+	//for test only
+
+	private static void initializeAux() {
+		aux.add("1515");
+		aux.add("1519");
+		aux.add("Torre dos Jerónimos");
+		aux.add("bruno");
 	}
 
-	private static void initializeAnswers(){
-		quizzesAnswers.put("M1", new String[] {"1514", "1519", "Torre de São Vicente"});
-		quizzesAnswers.put("M2", new String[] {"1502", "1513", "Mosteiro de Santa Maria de Belém"});
-		quizzesAnswers.put("M3", new String[] {"XIV", "D.João I", "1910"});
+	private static void initTest(){
+		userAnswers.put("M1", aux);
 	}
+
+	private static void initUsers(){
+		List<String[]> b = new ArrayList<String[]>();
+		b.add(new String[] {""});
+		b.add(new String[] {"0"});
+		users.put("bruno", b);
+	}
+
+	private static void print(){
+		for (Map.Entry<String, List<String[]>> entry : users.entrySet()) {
+			String key = entry.getKey();
+			for (String[] value : entry.getValue()) {
+				for (String aux : value) {
+					System.out.println("VALUE: " + aux);
+				}
+			}
+		}
+	}
+
+	*/
 
 }
+
