@@ -41,25 +41,6 @@ public class CommandHandlerImpl implements CommandHandler {
 	}
 
 	@Override
-	public Response handle(GetMonumentsCommand gmc) {
-		List<String> monumentsNames = new ArrayList<>();
-		for (Quiz quiz: Server.getQuizzes()) {
-			monumentsNames.add(quiz.getMonumentName());
-		}
-		return new GetMonumentsResponse(monumentsNames);
-  }
-  
-  @Override
-	public Response handle(GetQuizCommand gqc) {
-		for (Quiz quiz: Server.getQuizzes()) {
-			if(quiz.getMonumentName().equals(gqc.getMonumentName())){
-				return new GetQuizResponse(quiz);
-			}
-		}
-		return new GetQuizResponse(null);
-  }
-
-  @Override  
 	public Response handle(SignUpCommand suc) {
 		for (User user: Server.getUsers()) {
 			if(user.getUserID().equals(suc.getUserID())){
@@ -72,4 +53,22 @@ public class CommandHandlerImpl implements CommandHandler {
 		return new TicketResponse("OK");
 	}
 
+	@Override
+	public Response handle(GetQuizCommand gqc) {
+		for (Quiz quiz: Server.getQuizzes()) {
+			if(quiz.getMonumentName().equals(gqc.getMonumentName())){
+				return new GetQuizResponse(quiz);
+			}
+		}
+		return new GetQuizResponse(null);
+  	}
+
+	@Override
+	public Response handle(GetMonumentsCommand gmc) {
+		List<String> monumentsNames = new ArrayList<>();
+		for (Quiz quiz: Server.getQuizzes()) {
+			monumentsNames.add(quiz.getMonumentName());
+		}
+		return new GetMonumentsResponse(monumentsNames);
+	}
 }
