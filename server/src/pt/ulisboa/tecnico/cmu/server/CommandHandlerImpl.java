@@ -1,9 +1,12 @@
 package pt.ulisboa.tecnico.cmu.server;
 
 import pt.ulisboa.tecnico.cmu.command.CommandHandler;
+import pt.ulisboa.tecnico.cmu.command.GetQuizCommand;
 import pt.ulisboa.tecnico.cmu.command.HelloCommand;
 import pt.ulisboa.tecnico.cmu.command.TicketCommand;
+import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.data.User;
+import pt.ulisboa.tecnico.cmu.response.GetQuizResponse;
 import pt.ulisboa.tecnico.cmu.response.HelloResponse;
 import pt.ulisboa.tecnico.cmu.response.Response;
 import pt.ulisboa.tecnico.cmu.response.TicketResponse;
@@ -28,6 +31,16 @@ public class CommandHandlerImpl implements CommandHandler {
 			return new TicketResponse("NOK");
 		}
 		return new TicketResponse("NOK");
+	}
+
+	@Override
+	public Response handle(GetQuizCommand gqc) {
+		for (Quiz quiz: Server.getQuizzes()) {
+			if(quiz.getMonumentID().equals(gqc.getMonumentID())){
+				return new GetQuizResponse(quiz);
+			}
+		}
+		return new GetQuizResponse(null);
 	}
 
 }

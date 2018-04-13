@@ -132,22 +132,22 @@ public class Server {
 		questions.add(m1_1);
 		questions.add(m1_2);
 		questions.add(m1_3);
-		Quiz quiz1 = new Quiz("M1", questions);
+		Quiz quiz1 = new Quiz("M1", "Torre de Belém", questions);
 		questions.clear();
 		questions.add(m2_1);
 		questions.add(m2_2);
 		questions.add(m2_3);
-		Quiz quiz2 = new Quiz("M2", questions);
+		Quiz quiz2 = new Quiz("M2", "Mosteiro dos Jerónimos", questions);
 		questions.clear();
 		questions.add(m3_1);
 		questions.add(m3_2);
 		questions.add(m3_3);
-		Quiz quiz3 = new Quiz("M3", questions);
+		Quiz quiz3 = new Quiz("M3", "Padrão dos Descobrimentos", questions);
 		questions.clear();
 		questions.add(m4_1);
 		questions.add(m4_2);
 		questions.add(m4_3);
-		Quiz quiz4 = new Quiz("M4", questions);
+		Quiz quiz4 = new Quiz("M4", "Castelo de São Jorge", questions);
 		quizzes.add(quiz1);
 		quizzes.add(quiz2);
 		quizzes.add(quiz3);
@@ -175,13 +175,8 @@ public class Server {
 		return users;
 	}
 
-	public static Quiz getQuiz(String monumentID){
-		for (Quiz quiz: quizzes) {
-			if(quiz.getMonumentID().equals(monumentID)){
-				return quiz;
-			}
-		}
-		return null;
+	public static List<Quiz> getQuizzes(){
+		return quizzes;
 	}
 
 }
