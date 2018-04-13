@@ -10,7 +10,6 @@ import pt.ulisboa.tecnico.cmu.response.Response;
 import pt.ulisboa.tecnico.cmu.response.SignUpResponse;
 import pt.ulisboa.tecnico.cmu.response.TicketResponse;
 
-import javax.jws.soap.SOAPBinding;
 
 public class CommandHandlerImpl implements CommandHandler {
 
