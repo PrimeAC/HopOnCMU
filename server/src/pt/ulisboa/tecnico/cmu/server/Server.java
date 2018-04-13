@@ -9,12 +9,10 @@ import java.util.*;
 
 import pt.ulisboa.tecnico.cmu.command.Command;
 import pt.ulisboa.tecnico.cmu.response.Response;
+import pt.ulisboa.tecnico.cmu.data.Question;
+import pt.ulisboa.tecnico.cmu.data.User;
 
 public class Server {
-
-	public enum Options {
-		A, B, C, D;
-	}
 
 	//Monuments:
 	//M1 - Torre de Belém
@@ -38,31 +36,25 @@ public class Server {
 	private static final int PORT = 9090;
 
 	//keeps a map with: userID:[[answers], [points]]
-	private static Map<String, List<String[]>> users = new HashMap<String, List<String[]>>();
+	private static List<User> users = new ArrayList<User>();
 
+	//keeps a map with: monumentID:[questions]
+	private static Map<String, List> quizzes = new HashMap<String, List>();
 
+	//keeps a map with: ticketCode:userID
+	private static Map<String, String> tickets = new HashMap<String, String>();
+
+	/*
 	//for test only
 	private static Map<String, List<String>> userAnswers = new HashMap<String, List<String>>();
-	private static List<String> aux = new ArrayList<String>();
+	private static List<String> aux = new ArrayList<String>();*/
 
 	public static void main(String[] args) throws Exception {
 		initializeM1();
 		initializeM2();
 		initializeM3();
 		initializeM4();
-
-
-		/*
-		//for test only
-		initializeAux();
-		initTest();
-		initUsers();
-		print();
-		compareAnswers(userAnswers);
-		print();
-
-		//end of test
-		*/
+		initializeQuizzes();
 
 
 		CommandHandlerImpl chi = new CommandHandlerImpl();
@@ -102,42 +94,91 @@ public class Server {
 	}
 
 	private static void initializeM1() {
-		m1_1 = new Question("M1", "Em que ano começou a construção da Torre de Belém?",
+		m1_1 = new Question("Em que ano começou a construção da Torre de Belém?",
 				"1514", "1515", "1513", "1512", "1515");
-		m1_2 = new Question("M1", "Em que ano foi inaugurada a Torre de Belém?",
+		m1_2 = new Question("Em que ano foi inaugurada a Torre de Belém?",
 				"1514", "1515", "1513", "1519", "1519");
-		m1_3 = new Question("M1", "Que outro nome se dá à Torre de Belém?",
+		m1_3 = new Question("Que outro nome se dá à Torre de Belém?",
 				"Torre de São Vicente", "Torre dos Jerónimos", "Torre Francisco de Arruda", "Torre Cultural de Belém", "Torre de São Vicente");
 	}
 
 	private static void initializeM2() {
-		m2_1 = new Question("M2", "Em que ano começou a construção do Mosteiro dos Jerónimos?",
+		m2_1 = new Question("Em que ano começou a construção do Mosteiro dos Jerónimos?",
 				"1510", "1505", "1512", "1502","1502");
-		m2_2 = new Question("M2", "Em que ano foi inaugurado o Mosteiro dos Jerónimos?",
+		m2_2 = new Question("Em que ano foi inaugurado o Mosteiro dos Jerónimos?",
 				"1514", "1515", "1513", "1519", "1513");
-		m2_3 = new Question("M2", "Que outro nome se dá ao Mosteiro dos Jerónimos?",
+		m2_3 = new Question("Que outro nome se dá ao Mosteiro dos Jerónimos?",
 				"Torre de São Vicente", "Torre dos Jerónimos", "Mosteiro de Santa Maria de Belém", "Mosteiro de Belém", "Mosteiro de Santa Maria de Belém");
 	}
 
 	private static void initializeM3() {
-		m3_1 = new Question("M3", "Em que ano foi inaugurado o Padrão dos Descobrimentos original?",
+		m3_1 = new Question("Em que ano foi inaugurado o Padrão dos Descobrimentos original?",
 				"1933", "1940", "1936", "1945", "1940");
-		m3_2 = new Question("M3", "Em que ano foi inaugurado o Padrão dos Descobrimentos?",
+		m3_2 = new Question("Em que ano foi inaugurado o Padrão dos Descobrimentos?",
 				"1953", "1955", "1960", "1950", "1960");
-		m3_3 = new Question("M3", "Que outro nome se dá ao Padrão dos Descobrimentos?",
+		m3_3 = new Question("Que outro nome se dá ao Padrão dos Descobrimentos?",
 				"Monumento aos Navegantes", "Torre dos Descobrimentos", "Padrão de Santa Maria de Belém", "Monumento de Belém", "Monumento aos Navegantes");
 	}
 
 	private static void initializeM4() {
-		m4_1 = new Question("M4", "Em que século foi definido o nome do Castelo de São Jorge?",
+		m4_1 = new Question("Em que século foi definido o nome do Castelo de São Jorge?",
 				"XIV", "XV", "XVI", "XVII", "XIV");
-		m4_2 = new Question("M4", "Qual o rei que definiu o nome do castelo?",
+		m4_2 = new Question("Qual o rei que definiu o nome do castelo?",
 				"D.João I", "D.Duarte I", "D.João II", "D.Fernando I", "D.João I");
-		m4_3 = new Question("M4", "Em que ano foi declarado Monumento Nacional?",
+		m4_3 = new Question("Em que ano foi declarado Monumento Nacional?",
 				"1900", "1905", "1910", "1915", "1910");
 	}
 
+	private static void initializeQuizzes(){
+		List<Question> questions =new ArrayList<Question>();
+		questions.add(m1_1);
+		questions.add(m1_2);
+		questions.add(m1_3);
+		quizzes.put("M1", questions);
+		questions.clear();
+		questions.add(m2_1);
+		questions.add(m2_2);
+		questions.add(m2_3);
+		quizzes.put("M2", questions);
+		questions.clear();
+		questions.add(m3_1);
+		questions.add(m3_2);
+		questions.add(m3_3);
+		quizzes.put("M3", questions);
+		questions.clear();
+		questions.add(m4_1);
+		questions.add(m4_2);
+		questions.add(m4_3);
+		quizzes.put("M4", questions);
+	}
 
+	private static void sendM1() {
+
+	}
+
+	private static void sendM2() {
+
+	}
+
+	private static void sendM3() {
+
+	}
+
+	private static void sendM4() {
+
+	}
+
+	private static boolean usedTicket(String ticketCode) {
+		return tickets.containsKey(ticketCode);
+	}
+
+	private static void createNewUser(String ticketCode, String userID){
+		tickets.put(ticketCode, userID);
+	}
+
+	public static List<User> getUsers(){
+		return users;
+	}
 
 
 
