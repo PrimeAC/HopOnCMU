@@ -136,10 +136,26 @@ public class Server {
 	}
 
 	private static void initializeQuizzes(){
-		quiz1 = new Quiz("M1", m1_1, m1_2, m1_3);
-		quiz2 = new Quiz("M2", m2_1, m2_2, m2_3);
-		quiz3 = new Quiz("M3", m3_1, m3_2, m3_3);
-		quiz4 = new Quiz("M4", m4_1, m4_2, m4_3);
+		List<Question> questions = new ArrayList<Question>();
+		questions.add(m1_1);
+		questions.add(m1_2);
+		questions.add(m1_3);
+		quiz1 = new Quiz("M1", questions);
+		questions.clear();
+		questions.add(m2_1);
+		questions.add(m2_2);
+		questions.add(m2_3);
+		quiz2 = new Quiz("M2", questions);
+		questions.clear();
+		questions.add(m3_1);
+		questions.add(m3_2);
+		questions.add(m3_3);
+		quiz3 = new Quiz("M3", questions);
+		questions.clear();
+		questions.add(m4_1);
+		questions.add(m4_2);
+		questions.add(m4_3);
+		quiz4 = new Quiz("M4", questions);
 		quizzes.put(quiz1.getMonumentID(), quiz1);
 		quizzes.put(quiz2.getMonumentID(), quiz2);
 		quizzes.put(quiz3.getMonumentID(), quiz3);

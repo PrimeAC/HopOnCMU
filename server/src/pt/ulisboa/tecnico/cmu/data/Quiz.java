@@ -1,17 +1,15 @@
 package pt.ulisboa.tecnico.cmu.data;
 
+import java.util.List;
+
 public class Quiz {
 
     private String monumentID;
-    private Question q1;
-    private Question q2;
-    private Question q3;
+    private List<Question> questions;
 
-    public Quiz(String monumentID, Question q1, Question q2, Question q3){
+    public Quiz(String monumentID, List<Question> questions){
         this.monumentID = monumentID;
-        this.q1 = q1;
-        this.q2 = q2;
-        this.q3 = q3;
+        this.questions = questions;
 
     }
 
@@ -23,28 +21,11 @@ public class Quiz {
         this.monumentID = monumentID;
     }
 
-    public Question getQ1() {
-        return q1;
+    public List<Question> getQuestions() {
+        return questions;
     }
 
-    public void setQ1(Question q1) {
-        this.q1 = q1;
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
-
-    public Question getQ2() {
-        return q2;
-    }
-
-    public void setQ2(Question q2) {
-        this.q2 = q2;
-    }
-
-    public Question getQ3() {
-        return q3;
-    }
-
-    public void setQ3(Question q3) {
-        this.q3 = q3;
-    }
-
 }
