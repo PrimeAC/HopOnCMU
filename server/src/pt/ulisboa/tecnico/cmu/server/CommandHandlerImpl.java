@@ -1,22 +1,14 @@
 package pt.ulisboa.tecnico.cmu.server;
 
-import pt.ulisboa.tecnico.cmu.command.CommandHandler;
-import pt.ulisboa.tecnico.cmu.command.GetMonumentsCommand;
-import pt.ulisboa.tecnico.cmu.command.GetQuizCommand;
-import pt.ulisboa.tecnico.cmu.command.HelloCommand;
-import pt.ulisboa.tecnico.cmu.command.SignUpCommand;
-import pt.ulisboa.tecnico.cmu.command.TicketCommand;
+import pt.ulisboa.tecnico.cmu.command.*;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.data.User;
-import pt.ulisboa.tecnico.cmu.response.GetMonumentsResponse;
-import pt.ulisboa.tecnico.cmu.response.GetQuizResponse;
-import pt.ulisboa.tecnico.cmu.response.HelloResponse;
-import pt.ulisboa.tecnico.cmu.response.Response;
-import pt.ulisboa.tecnico.cmu.response.SignUpResponse;
-import pt.ulisboa.tecnico.cmu.response.TicketResponse;
+import pt.ulisboa.tecnico.cmu.response.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CommandHandlerImpl implements CommandHandler {
 
@@ -72,4 +64,12 @@ public class CommandHandlerImpl implements CommandHandler {
 		return new TicketResponse("OK");
 	}
 
+	@Override
+	public Response handle(GetRankingCommand grc) {
+		Map<String, Integer> unsortRanking = new HashMap<>();
+		for (User user: Server.getUsers()) {
+			unsortRanking.put(user.getUserID(), user.getScore());
+		}
+		return new GetRankingResponse(Server.sortByScore(unsortRanking));
+	}
 }
