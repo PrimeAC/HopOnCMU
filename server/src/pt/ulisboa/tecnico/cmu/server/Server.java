@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.*;
 
 import pt.ulisboa.tecnico.cmu.command.Command;
+import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.response.Response;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.User;
@@ -35,19 +36,15 @@ public class Server {
 
 	private static final int PORT = 9090;
 
-	//keeps a map with: userID:[[answers], [points]]
-	private static List<User> users = new ArrayList<User>();
+	//keeps a list of users
+	private static List<User> users = new ArrayList<>();
 
-	//keeps a map with: monumentID:[questions]
-	private static Map<String, List> quizzes = new HashMap<String, List>();
+	//keeps a list of quizzes
+	private static List<Quiz> quizzes = new ArrayList<>();
 
-	//keeps a map with: ticketCode:userID
-	private static Map<String, String> tickets = new HashMap<String, String>();
+	//keeps a list of valid codes
+	private static List<String> tickets = new ArrayList<>();
 
-	/*
-	//for test only
-	private static Map<String, List<String>> userAnswers = new HashMap<String, List<String>>();
-	private static List<String> aux = new ArrayList<String>();*/
 
 	public static void main(String[] args) throws Exception {
 		initializeM1();
@@ -55,6 +52,7 @@ public class Server {
 		initializeM3();
 		initializeM4();
 		initializeQuizzes();
+		initializeTickets();
 
 
 		CommandHandlerImpl chi = new CommandHandlerImpl();
@@ -130,111 +128,61 @@ public class Server {
 	}
 
 	private static void initializeQuizzes(){
-		List<Question> questions =new ArrayList<Question>();
+		List<Question> questions = new ArrayList<>();
 		questions.add(m1_1);
 		questions.add(m1_2);
 		questions.add(m1_3);
-		quizzes.put("M1", questions);
+		Quiz quiz1 = new Quiz("M1", questions);
 		questions.clear();
 		questions.add(m2_1);
 		questions.add(m2_2);
 		questions.add(m2_3);
-		quizzes.put("M2", questions);
+		Quiz quiz2 = new Quiz("M2", questions);
 		questions.clear();
 		questions.add(m3_1);
 		questions.add(m3_2);
 		questions.add(m3_3);
-		quizzes.put("M3", questions);
+		Quiz quiz3 = new Quiz("M3", questions);
 		questions.clear();
 		questions.add(m4_1);
 		questions.add(m4_2);
 		questions.add(m4_3);
-		quizzes.put("M4", questions);
+		Quiz quiz4 = new Quiz("M4", questions);
+		quizzes.add(quiz1);
+		quizzes.add(quiz2);
+		quizzes.add(quiz3);
+		quizzes.add(quiz4);
 	}
 
-	private static void sendM1() {
-
+	public static boolean validTicket(String ticketCode) {
+		return tickets.contains(ticketCode);
 	}
 
-	private static void sendM2() {
-
-	}
-
-	private static void sendM3() {
-
-	}
-
-	private static void sendM4() {
-
-	}
-
-	private static boolean usedTicket(String ticketCode) {
-		return tickets.containsKey(ticketCode);
-	}
-
-	private static void createNewUser(String ticketCode, String userID){
-		tickets.put(ticketCode, userID);
+	private static void initializeTickets(){
+		tickets.add("123456");
+		tickets.add("654321");
+		tickets.add("123123");
+		tickets.add("321321");
+		tickets.add("111111");
+		tickets.add("222222");
+		tickets.add("333333");
+		tickets.add("444444");
+		tickets.add("555555");
+		tickets.add("666666");
 	}
 
 	public static List<User> getUsers(){
 		return users;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-	//for test only
-
-	private static void initializeAux() {
-		aux.add("1515");
-		aux.add("1519");
-		aux.add("Torre dos Jerónimos");
-		aux.add("bruno");
-	}
-
-	private static void initTest(){
-		userAnswers.put("M1", aux);
-	}
-
-	private static void initUsers(){
-		List<String[]> b = new ArrayList<String[]>();
-		b.add(new String[] {""});
-		b.add(new String[] {"0"});
-		users.put("bruno", b);
-	}
-
-	private static void print(){
-		for (Map.Entry<String, List<String[]>> entry : users.entrySet()) {
-			String key = entry.getKey();
-			for (String[] value : entry.getValue()) {
-				for (String aux : value) {
-					System.out.println("VALUE: " + aux);
-				}
+	public static Quiz getQuiz(String monumentID){
+		for (Quiz quiz: quizzes) {
+			if(quiz.getMonumentID().equals(monumentID)){
+				return quiz;
 			}
 		}
+		return null;
 	}
-
-	*/
 
 }
 

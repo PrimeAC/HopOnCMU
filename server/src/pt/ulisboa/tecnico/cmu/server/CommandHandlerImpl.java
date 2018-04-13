@@ -18,11 +18,14 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(TicketCommand tc) {
-		for (User user: Server.getUsers()) {
-			if(user.getTicketCode().equals(tc.getTicketCode())){
-				//ticket code already used
-				return new TicketResponse("OK");
+		if(Server.validTicket(tc.getTicketCode())){
+			for (User user: Server.getUsers()) {
+				if(user.getTicketCode().equals(tc.getTicketCode())){
+					//ticket code already used so can login
+					return new TicketResponse("OK");
+				}
 			}
+			return new TicketResponse("NOK");
 		}
 		return new TicketResponse("NOK");
 	}
