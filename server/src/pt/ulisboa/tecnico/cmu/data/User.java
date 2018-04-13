@@ -5,17 +5,13 @@ import java.util.List;
 public class User {
 
     private String userID;
-    private int score;
     private String ticketCode;
+    private int score;
 
-    public User(String ticketCode){
-        this.ticketCode = ticketCode;
-    }
-
-    public User(String userID, int score, String ticketCode){
+    public User(String userID, String ticketCode, int score){
         this.userID = userID;
-        this.score = score;
         this.ticketCode = ticketCode;
+        this.score = score;
 
     }
 

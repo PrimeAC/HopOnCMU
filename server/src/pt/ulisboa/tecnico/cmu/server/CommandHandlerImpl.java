@@ -10,6 +10,8 @@ import pt.ulisboa.tecnico.cmu.response.Response;
 import pt.ulisboa.tecnico.cmu.response.SignUpResponse;
 import pt.ulisboa.tecnico.cmu.response.TicketResponse;
 
+import javax.jws.soap.SOAPBinding;
+
 public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
@@ -37,6 +39,8 @@ public class CommandHandlerImpl implements CommandHandler {
 				return new SignUpResponse("NOK");
 			}
 		}
+		User user = new User(suc.getUserID(), suc.getTicketCode(), 0);
+		Server.getUsers().add(user);
 		return new TicketResponse("OK");
 	}
 
