@@ -2,10 +2,12 @@ package pt.ulisboa.tecnico.cmu.server;
 
 import pt.ulisboa.tecnico.cmu.command.CommandHandler;
 import pt.ulisboa.tecnico.cmu.command.HelloCommand;
+import pt.ulisboa.tecnico.cmu.command.SignUpCommand;
 import pt.ulisboa.tecnico.cmu.command.TicketCommand;
 import pt.ulisboa.tecnico.cmu.data.User;
 import pt.ulisboa.tecnico.cmu.response.HelloResponse;
 import pt.ulisboa.tecnico.cmu.response.Response;
+import pt.ulisboa.tecnico.cmu.response.SignUpResponse;
 import pt.ulisboa.tecnico.cmu.response.TicketResponse;
 
 public class CommandHandlerImpl implements CommandHandler {
@@ -25,6 +27,17 @@ public class CommandHandlerImpl implements CommandHandler {
 			}
 		}
 		return new TicketResponse("NOK");
+	}
+
+	@Override
+	public Response handle(SignUpCommand suc) {
+		for (User user: Server.getUsers()) {
+			if(user.getUserID().equals(suc.getUserID())){
+				//ticket userID already used
+				return new SignUpResponse("NOK");
+			}
+		}
+		return new TicketResponse("OK");
 	}
 
 }
