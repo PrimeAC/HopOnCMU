@@ -34,26 +34,17 @@ public class Server {
 	private static Question m4_2;
 	private static Question m4_3;
 
-	private static Quiz quiz1;
-	private static Quiz quiz2;
-	private static Quiz quiz3;
-	private static Quiz quiz4;
-
 	private static final int PORT = 9090;
 
-	//keeps a map with: userID
-	private static List<User> users = new ArrayList<User>();
+	//keeps a list of users
+	private static List<User> users = new ArrayList<>();
 
-	//keeps a map with: monumentID:quiz
-	private static Map<String, Quiz> quizzes = new HashMap<String, Quiz>();
+	//keeps a list of quizzes
+	private static List<Quiz> quizzes = new ArrayList<>();
 
-	//keeps a map with: ticketCode:userID
-	private static Map<String, String> tickets = new HashMap<String, String>();
+	//keeps a list of valid codes
+	private static List<String> tickets = new ArrayList<>();
 
-	/*
-	//for test only
-	private static Map<String, List<String>> userAnswers = new HashMap<String, List<String>>();
-	private static List<String> aux = new ArrayList<String>();*/
 
 	public static void main(String[] args) throws Exception {
 		initializeM1();
@@ -61,6 +52,7 @@ public class Server {
 		initializeM3();
 		initializeM4();
 		initializeQuizzes();
+		initializeTickets();
 
 
 		CommandHandlerImpl chi = new CommandHandlerImpl();
@@ -136,39 +128,47 @@ public class Server {
 	}
 
 	private static void initializeQuizzes(){
-		List<Question> questions = new ArrayList<Question>();
+		List<Question> questions = new ArrayList<>();
 		questions.add(m1_1);
 		questions.add(m1_2);
 		questions.add(m1_3);
-		quiz1 = new Quiz("M1", questions);
+		Quiz quiz1 = new Quiz("M1", questions);
 		questions.clear();
 		questions.add(m2_1);
 		questions.add(m2_2);
 		questions.add(m2_3);
-		quiz2 = new Quiz("M2", questions);
+		Quiz quiz2 = new Quiz("M2", questions);
 		questions.clear();
 		questions.add(m3_1);
 		questions.add(m3_2);
 		questions.add(m3_3);
-		quiz3 = new Quiz("M3", questions);
+		Quiz quiz3 = new Quiz("M3", questions);
 		questions.clear();
 		questions.add(m4_1);
 		questions.add(m4_2);
 		questions.add(m4_3);
-		quiz4 = new Quiz("M4", questions);
-		quizzes.put(quiz1.getMonumentID(), quiz1);
-		quizzes.put(quiz2.getMonumentID(), quiz2);
-		quizzes.put(quiz3.getMonumentID(), quiz3);
-		quizzes.put(quiz4.getMonumentID(), quiz4);
-
+		Quiz quiz4 = new Quiz("M4", questions);
+		quizzes.add(quiz1);
+		quizzes.add(quiz2);
+		quizzes.add(quiz3);
+		quizzes.add(quiz4);
 	}
 
-	private static boolean usedTicket(String ticketCode) {
-		return tickets.containsKey(ticketCode);
+	public static boolean validTicket(String ticketCode) {
+		return tickets.contains(ticketCode);
 	}
 
-	private static void createNewUser(String ticketCode, String userID){
-		tickets.put(ticketCode, userID);
+	private static void initializeTickets(){
+		tickets.add("123456");
+		tickets.add("654321");
+		tickets.add("123123");
+		tickets.add("321321");
+		tickets.add("111111");
+		tickets.add("222222");
+		tickets.add("333333");
+		tickets.add("444444");
+		tickets.add("555555");
+		tickets.add("666666");
 	}
 
 	public static List<User> getUsers(){
@@ -176,69 +176,13 @@ public class Server {
 	}
 
 	public static Quiz getQuiz(String monumentID){
-		for (Map.Entry<String, Quiz> quiz: quizzes.entrySet()) {
-			if(quiz.getKey().equals(monumentID)){
-				return quiz.getValue();
+		for (Quiz quiz: quizzes) {
+			if(quiz.getMonumentID().equals(monumentID)){
+				return quiz;
 			}
 		}
 		return null;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-	//for test only
-
-	private static void initializeAux() {
-		aux.add("1515");
-		aux.add("1519");
-		aux.add("Torre dos Jerónimos");
-		aux.add("bruno");
-	}
-
-	private static void initTest(){
-		userAnswers.put("M1", aux);
-	}
-
-	private static void initUsers(){
-		List<String[]> b = new ArrayList<String[]>();
-		b.add(new String[] {""});
-		b.add(new String[] {"0"});
-		users.put("bruno", b);
-	}
-
-	private static void print(){
-		for (Map.Entry<String, List<String[]>> entry : users.entrySet()) {
-			String key = entry.getKey();
-			for (String[] value : entry.getValue()) {
-				for (String aux : value) {
-					System.out.println("VALUE: " + aux);
-				}
-			}
-		}
-	}
-
-	*/
 
 }
 
