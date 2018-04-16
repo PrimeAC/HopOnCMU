@@ -13,6 +13,9 @@ import pt.ulisboa.tecnico.cmu.response.Response;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.User;
 
+import static java.util.stream.Collectors.*;
+import static java.util.Map.Entry.*;
+
 public class Server {
 
 	//Monuments:
@@ -177,6 +180,12 @@ public class Server {
 
 	public static List<Quiz> getQuizzes(){
 		return quizzes;
+	}
+
+	public static Map<String, Integer> sortByScore(Map<String, Integer> unsortedRanking){
+		Map<String, Integer> sortedRanking = unsortedRanking.entrySet().stream().sorted(Collections
+				.reverseOrder(Map.Entry.comparingByValue())).collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
+		return sortedRanking;
 	}
 
 }
