@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.cmu.response;
 
-import java.util.List;
 import java.util.Map;
 
 public class GetRankingResponse implements Response {

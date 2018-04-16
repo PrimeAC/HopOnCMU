@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.cmu.data;
 
-import java.util.List;
-
 public class User {
 
     private String userID;

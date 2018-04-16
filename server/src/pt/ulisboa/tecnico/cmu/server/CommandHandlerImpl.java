@@ -20,9 +20,9 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(TicketCommand tc) {
-		if(Server.validTicket(tc.getTicketCode())){
-			for (User user: Server.getUsers()) {
-				if(user.getTicketCode().equals(tc.getTicketCode())){
+		if (Server.validTicket(tc.getTicketCode())) {
+			for (User user : Server.getUsers()) {
+				if (user.getTicketCode().equals(tc.getTicketCode())) {
 					//ticket code already used so can login
 					return new TicketResponse("OK");
 				}
@@ -34,8 +34,8 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(SignUpCommand suc) {
-		for (User user: Server.getUsers()) {
-			if(user.getUserID().equals(suc.getUserID())){
+		for (User user : Server.getUsers()) {
+			if (user.getUserID().equals(suc.getUserID())) {
 				//ticket userID already used
 				return new SignUpResponse("NOK");
 			}
@@ -47,28 +47,29 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(GetQuizCommand gqc) {
-		for (Quiz quiz: Server.getQuizzes()) {
-			if(quiz.getMonumentName().equals(gqc.getMonumentName())){
+		for (Quiz quiz : Server.getQuizzes()) {
+			if (quiz.getMonumentName().equals(gqc.getMonumentName())) {
 				return new GetQuizResponse(quiz);
 			}
 		}
 		return new GetQuizResponse(null);
-  }
+	}
 
 	@Override
 	public Response handle(GetMonumentsCommand gmc) {
 		List<String> monumentsNames = new ArrayList<>();
-		for (Quiz quiz: Server.getQuizzes()) {
+		for (Quiz quiz : Server.getQuizzes()) {
 			monumentsNames.add(quiz.getMonumentName());
 		}
 		return new GetMonumentsResponse(monumentsNames);
 	}
-  
-  @Override
-  public Response handle(GetRankingCommand grc) {
+
+	@Override
+	public Response handle(GetRankingCommand grc) {
 		Map<String, Integer> unsortRanking = new HashMap<>();
-		for (User user: Server.getUsers()) {
+		for (User user : Server.getUsers()) {
 			unsortRanking.put(user.getUserID(), user.getScore());
 		}
 		return new GetRankingResponse(Server.sortByScore(unsortRanking));
-  }
+	}
+}
