@@ -61,7 +61,7 @@
                     android:backgroundTint="@android:color/white"
                     android:gravity="center_horizontal"
                     android:imeOptions="actionDone"
-                    />
+                    android:textColor="@android:color/white"/>
 
             </android.support.design.widget.TextInputLayout>
 

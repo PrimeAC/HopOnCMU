@@ -217,6 +217,8 @@ public class ValidateActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
+                Intent intent = new Intent(mActivity, MainActivity.class);
+                mActivity.startActivity(intent);
                 finish();
             } else {
                 Intent intent = new Intent(mActivity, SignUpActivity.class);
