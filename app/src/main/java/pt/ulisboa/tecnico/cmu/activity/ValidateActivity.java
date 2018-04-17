@@ -3,15 +3,12 @@ package pt.ulisboa.tecnico.cmu.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,18 +27,6 @@ import pt.ulisboa.tecnico.cmu.response.TicketResponse;
  * A login screen that offers login via ticket code.
  */
 public class ValidateActivity extends GeneralActivity {
-
-    /**
-     * A dummy authentication store containing known ticket codes.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "ABC123", "DEF456"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mTicketCodeView;
@@ -87,9 +72,6 @@ public class ValidateActivity extends GeneralActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mTicketCodeView.setError(null);
@@ -120,8 +102,6 @@ public class ValidateActivity extends GeneralActivity {
             // perform the user login attempt.
             showProgress(true);
             new ClientSocket(this, new TicketCommand(ticketCode)).execute();
-            mAuthTask = new UserLoginTask(ticketCode, this);
-            mAuthTask.execute((Void) null);
         }
     }
 
@@ -168,77 +148,22 @@ public class ValidateActivity extends GeneralActivity {
 
     @Override
     public void updateInterface(Response response) {
+        showProgress(false);
         TicketResponse ticketResponse = (TicketResponse) response;
         if (ticketResponse.getMessage().equals("OK")){
-            //TODO: implement the login activity
-            Log.i("1", "OK-----------------------------------------");
+            Intent intent = new Intent(this, MainActivity.class);
+            this.startActivity(intent);
+            finish();
         }
         else if (ticketResponse.getMessage().equals("NU")){
-            // TODO: implement the jump to sign up activity
-            Log.i("2", "NU-----------------------------------------");
+            Intent intent = new Intent(this, SignUpActivity.class);
+            this.startActivity(intent);
         }
         else {
-            //TODO: print an error message to the user
-            Log.i("3", "NOK-----------------------------------------");
+            mTicketCodeView.setError(getString(R.string.error_incorrect_ticketCode));
+            mTicketCodeView.requestFocus();
         }
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mTicketCode;
-        private final Activity mActivity;
-
-        UserLoginTask(String ticketCode, Activity activity) {
-            mTicketCode = ticketCode;
-            mActivity = activity;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                if (credential.equals(mTicketCode)) {
-                    // Ticket code exists, return true.
-                    return true;
-                }
-            }
-
-            // TODO: ticket code does not exist
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                Intent intent = new Intent(mActivity, MainActivity.class);
-                mActivity.startActivity(intent);
-                finish();
-            } else {
-                Intent intent = new Intent(mActivity, SignUpActivity.class);
-                mActivity.startActivity(intent);
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    }
 }
 
