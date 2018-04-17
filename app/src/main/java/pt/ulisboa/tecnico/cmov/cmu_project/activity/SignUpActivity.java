@@ -3,7 +3,9 @@ package pt.ulisboa.tecnico.cmov.cmu_project.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -108,7 +110,7 @@ public class SignUpActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mRegisterTask = new UserSignUpTask(username);
+            mRegisterTask = new UserSignUpTask(username, this);
             mRegisterTask.execute((Void) null);
         }
 
@@ -163,9 +165,12 @@ public class SignUpActivity extends AppCompatActivity {
     public class UserSignUpTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mUsername;
+        private final Activity mActivity;
 
-        UserSignUpTask(String username) {
+        UserSignUpTask(String username, Activity activity) {
             mUsername = username;
+            mActivity = activity;
+
         }
 
         @Override
@@ -196,6 +201,8 @@ public class SignUpActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
+                Intent intent = new Intent(mActivity, MainActivity.class);
+                mActivity.startActivity(intent);
                 finish();
             } else {
                 mUsernameView.setError(getString(R.string.error_occupied_username));
