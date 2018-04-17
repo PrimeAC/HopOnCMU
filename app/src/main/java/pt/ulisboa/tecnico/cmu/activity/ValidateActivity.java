@@ -5,42 +5,23 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
 
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.communication.clientSocket;
+import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.response.Response;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 import pt.ulisboa.tecnico.cmu.command.TicketCommand;
 import pt.ulisboa.tecnico.cmu.response.TicketResponse;
@@ -138,7 +119,7 @@ public class ValidateActivity extends GeneralActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            new clientSocket(this, new TicketCommand(ticketCode)).execute();
+            new ClientSocket(this, new TicketCommand(ticketCode)).execute();
             mAuthTask = new UserLoginTask(ticketCode, this);
             mAuthTask.execute((Void) null);
         }
@@ -244,7 +225,9 @@ public class ValidateActivity extends GeneralActivity {
             showProgress(false);
 
             if (success) {
-                //finish();
+                Intent intent = new Intent(mActivity, MainActivity.class);
+                mActivity.startActivity(intent);
+                finish();
             } else {
                 Intent intent = new Intent(mActivity, SignUpActivity.class);
                 mActivity.startActivity(intent);

@@ -14,12 +14,12 @@ import pt.ulisboa.tecnico.cmu.command.Command;
 import pt.ulisboa.tecnico.cmu.response.Response;
 
 
-public class clientSocket extends AsyncTask<Void, Void, Response> {
+public class ClientSocket extends AsyncTask<Void, Void, Response> {
 
     private GeneralActivity generalActivity;
     private Command command;
 
-    public clientSocket(GeneralActivity generalActivity, Command command) {
+    public ClientSocket(GeneralActivity generalActivity, Command command) {
         this.generalActivity = generalActivity;
         this.command = command;
     }

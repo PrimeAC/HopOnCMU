@@ -12,12 +12,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
+import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.response.Response;
 
 
 public class MainActivity extends GeneralActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, MonumentsFragment.OnListFragmentInteractionListener  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,5 +107,15 @@ public class MainActivity extends GeneralActivity
     @Override
     public void updateInterface(Response response) {
 
+    }
+
+    @Override
+    public void onListFragmentInteraction(MonumentsListContent.MonumentItem item) {
+        switch (item.id) {
+            case "1": //TODO Start Quiz activity for Belem Tower;
+            case "2": //TODO Start Quiz activity for Jeronimos Monastery;
+            case "3": //TODO Start Quiz activity for Monument to the Discoveries;
+            case "4": //TODO Start Quiz activity for Sao Jorge Castle;
+        }
     }
 }

@@ -10,7 +10,7 @@
 
     <fragment
         android:id="@+id/monuments_fragment"
-        android:name="pt.ulisboa.tecnico.cmov.cmu_project.fragment.MonumentsFragment"
+        android:name="pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
