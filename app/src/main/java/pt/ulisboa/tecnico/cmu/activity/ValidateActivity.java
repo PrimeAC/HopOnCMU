@@ -102,8 +102,6 @@ public class ValidateActivity extends GeneralActivity {
             // perform the user login attempt.
             showProgress(true);
             new ClientSocket(this, new TicketCommand(ticketCode)).execute();
-            //mAuthTask = new UserLoginTask(ticketCode, this);
-            //mAuthTask.execute((Void) null);
         }
     }
 
