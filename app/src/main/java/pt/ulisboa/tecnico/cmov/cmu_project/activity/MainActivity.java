@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.cmu_project.activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -106,6 +107,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(MonumentsListContent.MonumentItem item) {
-
+        switch (item.id) {
+            case "1": //TODO Start Quiz activity for Belem Tower;
+            case "2": //TODO Start Quiz activity for Jeronimos Monastery;
+            case "3": //TODO Start Quiz activity for Monument to the Discoveries;
+            case "4": //TODO Start Quiz activity for Sao Jorge Castle;
+        }
     }
 }
