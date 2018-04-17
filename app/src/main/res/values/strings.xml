@@ -14,8 +14,7 @@
     <string name="error_incorrect_ticketCode">This ticket code is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+        completions."</string>
 
     <!-- Strings related to sign up -->
     <string name="text_create_account">Create your account</string>
@@ -23,6 +22,12 @@
     <string name="action_sign_up">Sign up</string>
     <string name="error_invalid_username">Username can only contain letters</string>
     <string name="error_occupied_username">This username is already in use</string>
+
+    <!-- String related to MainActivity drawer-->
+    <string name="text_monuments">Monuments</string>
+    <string name="text_ranking">Rankings</string>
+    <string name="text_history">History</string>
+    <string name="text_logout">Logout</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
