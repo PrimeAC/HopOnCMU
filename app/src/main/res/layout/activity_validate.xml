@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/degrade_background"
-    tools:context="pt.ulisboa.tecnico.cmov.cmu_project.activity.ValidateActivity">
+    tools:context="pt.ulisboa.tecnico.cmu.activity.ValidateActivity">
 
     <!-- Login progress -->
     <ProgressBar

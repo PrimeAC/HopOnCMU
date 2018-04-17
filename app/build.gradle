@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "pt.ulisboa.tecnico.cmov.cmu_project"
+        applicationId "pt.ulisboa.tecnico.cmu"
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 1

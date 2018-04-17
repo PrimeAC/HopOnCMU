@@ -20,6 +20,7 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(TicketCommand tc) {
+		System.out.println("Este é o bilhete recebido " + tc.getTicketCode());
 		if (Server.validTicket(tc.getTicketCode())) {
 			for (User user : Server.getUsers()) {
 				if (user.getTicketCode().equals(tc.getTicketCode())) {
@@ -27,7 +28,8 @@ public class CommandHandlerImpl implements CommandHandler {
 					return new TicketResponse("OK");
 				}
 			}
-			return new TicketResponse("NOK");
+			//ticket never used (NU), so need to create an account
+			return new TicketResponse("NU");
 		}
 		return new TicketResponse("NOK");
 	}
