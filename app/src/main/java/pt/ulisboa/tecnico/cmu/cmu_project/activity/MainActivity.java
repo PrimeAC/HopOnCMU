@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.cmu_project.activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,9 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import pt.ulisboa.tecnico.cmov.cmu_project.R;
+import pt.ulisboa.tecnico.cmov.cmu_project.fragment.MonumentsFragment;
+import pt.ulisboa.tecnico.cmov.cmu_project.fragment.dummy.MonumentsListContent;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, MonumentsFragment.OnListFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -99,5 +103,15 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onListFragmentInteraction(MonumentsListContent.MonumentItem item) {
+        switch (item.id) {
+            case "1": //TODO Start Quiz activity for Belem Tower;
+            case "2": //TODO Start Quiz activity for Jeronimos Monastery;
+            case "3": //TODO Start Quiz activity for Monument to the Discoveries;
+            case "4": //TODO Start Quiz activity for Sao Jorge Castle;
+        }
     }
 }
