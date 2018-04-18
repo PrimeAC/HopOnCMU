@@ -157,6 +157,7 @@ public class ValidateActivity extends GeneralActivity {
         }
         else if (ticketResponse.getMessage().equals("NU")){
             Intent intent = new Intent(this, SignUpActivity.class);
+            intent.putExtra("ticketCode", ticketCode);
             this.startActivity(intent);
         }
         else {
