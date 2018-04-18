@@ -36,6 +36,7 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(SignUpCommand suc) {
+		System.out.println("Bilhete recebido " + suc.getTicketCode() + " user: " + suc.getUserID());
 		for (User user : Server.getUsers()) {
 			if (user.getUserID().equals(suc.getUserID())) {
 				//ticket userID already used
@@ -44,7 +45,7 @@ public class CommandHandlerImpl implements CommandHandler {
 		}
 		User user = new User(suc.getUserID(), suc.getTicketCode(), 0);
 		Server.getUsers().add(user);
-		return new TicketResponse("OK");
+		return new SignUpResponse("OK");
 	}
 
 	@Override
