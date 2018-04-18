@@ -28,9 +28,18 @@
     <string name="text_ranking">Rankings</string>
     <string name="text_history">History</string>
     <string name="text_logout">Logout</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- String related to QuizActivity -->
+    <string name="text_button_A">A</string>
+    <string name="text_button_B">B</string>
+    <string name="text_button_C">C</string>
+    <string name="text_button_D">D</string>
+    <string name="text_button_previous">Previous</string>
+    <string name="text_button_next">Next</string>
+    <string name="text_question_example">Your question here?</string>
+    <string name="text_answer_example">Your answer here.</string>
 
     <string name="action_settings">Settings</string>
 

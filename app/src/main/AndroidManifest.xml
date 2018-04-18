@@ -21,8 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activity.SignUpActivity"/>
+        <activity android:name=".activity.SignUpActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -32,6 +31,7 @@
             android:name=".activity.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.QuizActivity"></activity>
     </application>
 
 </manifest>
