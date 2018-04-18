@@ -159,12 +159,13 @@ public class SignUpActivity extends GeneralActivity {
     public void updateInterface(Response response) {
         showProgress(false);
         SignUpResponse signUpResponse = (SignUpResponse) response;
-        if (signUpResponse.getMessage().equals("OK")){
+        if (signUpResponse.getMessage().get(0).equals("OK")){
             Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("userID", signUpResponse.getMessage().get(1));
             this.startActivity(intent);
             finish();
         }
-        else if(signUpResponse.getMessage().equals("NOK")){
+        else if(signUpResponse.getMessage().get(0).equals("NOK")){
             mUsernameView.setError(getString(R.string.error_occupied_username));
             mUsernameView.requestFocus();
         }
