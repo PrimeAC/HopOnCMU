@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmu.activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,6 +12,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
 import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
@@ -45,6 +47,13 @@ public class MainActivity extends GeneralActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            String data = extras.getString("userID");
+            View header = navigationView.getHeaderView(0);
+            ((TextView) header.findViewById(R.id.userID)).setText(data);
+        }
     }
 
     @Override

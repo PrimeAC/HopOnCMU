@@ -150,12 +150,13 @@ public class ValidateActivity extends GeneralActivity {
     public void updateInterface(Response response) {
         showProgress(false);
         TicketResponse ticketResponse = (TicketResponse) response;
-        if (ticketResponse.getMessage().equals("OK")){
+        if (ticketResponse.getMessage().get(0).equals("OK")){
             Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("userID", ticketResponse.getMessage().get(1));
             this.startActivity(intent);
             finish();
         }
-        else if (ticketResponse.getMessage().equals("NU")){
+        else if (ticketResponse.getMessage().get(0).equals("NU")){
             Intent intent = new Intent(this, SignUpActivity.class);
             intent.putExtra("ticketCode", ticketCode);
             this.startActivity(intent);
