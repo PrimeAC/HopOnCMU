@@ -15,25 +15,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="pt.ulisboa.tecnico.cmu.activity.ValidateActivity">
+        <activity android:name=".activity.ValidateActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name="pt.ulisboa.tecnico.cmu.activity.SignUpActivity"/>
+        <activity android:name=".activity.SignUpActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
         <activity
-            android:name="pt.ulisboa.tecnico.cmu.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activity.QuizActivity"></activity>
+        <activity android:name=".activity.QuizActivity" />
     </application>
 
 </manifest>
