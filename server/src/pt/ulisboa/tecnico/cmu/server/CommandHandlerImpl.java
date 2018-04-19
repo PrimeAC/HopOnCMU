@@ -20,29 +20,41 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(TicketCommand tc) {
+		System.out.println("Este é o bilhete recebido " + tc.getTicketCode());
+		List<String> info = new ArrayList<>();
 		if (Server.validTicket(tc.getTicketCode())) {
 			for (User user : Server.getUsers()) {
 				if (user.getTicketCode().equals(tc.getTicketCode())) {
 					//ticket code already used so can login
-					return new TicketResponse("OK");
+					info.add("OK");
+					info.add(user.getUserID());
+					return new TicketResponse(info);
 				}
 			}
-			return new TicketResponse("NOK");
+			//ticket never used (NU), so need to create an account
+			info.add("NU");
+			return new TicketResponse(info);
 		}
-		return new TicketResponse("NOK");
+		info.add("NOK");
+		return new TicketResponse(info);
 	}
 
 	@Override
 	public Response handle(SignUpCommand suc) {
+		System.out.println("Bilhete recebido " + suc.getTicketCode() + " user: " + suc.getUserID());
+		List<String> info = new ArrayList<>();
 		for (User user : Server.getUsers()) {
 			if (user.getUserID().equals(suc.getUserID())) {
 				//ticket userID already used
-				return new SignUpResponse("NOK");
+				info.add("NOK");
+				return new SignUpResponse(info);
 			}
 		}
 		User user = new User(suc.getUserID(), suc.getTicketCode(), 0);
 		Server.getUsers().add(user);
-		return new TicketResponse("OK");
+		info.add("OK");
+		info.add(suc.getUserID());
+		return new SignUpResponse(info);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.cmu_project.fragment.dummy;
+package pt.ulisboa.tecnico.cmu.fragment.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

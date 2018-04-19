@@ -11,7 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/degrade_background"
     android:fitsSystemWindows="true"
-    tools:context="pt.ulisboa.tecnico.cmov.cmu_project.activity.SignUpActivity">
+    tools:context="pt.ulisboa.tecnico.cmu.activity.SignUpActivity">
 
     <ProgressBar
         android:id="@+id/signup_progress"

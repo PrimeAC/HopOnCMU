@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.cmu_project.fragment;
+package pt.ulisboa.tecnico.cmu.fragment;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,9 +8,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.cmu_project.R;
-import pt.ulisboa.tecnico.cmov.cmu_project.fragment.MonumentsFragment.OnListFragmentInteractionListener;
-import pt.ulisboa.tecnico.cmov.cmu_project.fragment.dummy.MonumentsListContent.MonumentItem;
+import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment.OnListFragmentInteractionListener;
+import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent.MonumentItem;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link MonumentItem} and makes a call to the

@@ -1,64 +1,39 @@
-package pt.ulisboa.tecnico.cmov.cmu_project.activity;
+package pt.ulisboa.tecnico.cmu.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
 
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
+import pt.ulisboa.tecnico.cmu.response.Response;
 
-import pt.ulisboa.tecnico.cmov.cmu_project.R;
-
-import static android.Manifest.permission.READ_CONTACTS;
+import pt.ulisboa.tecnico.cmu.command.TicketCommand;
+import pt.ulisboa.tecnico.cmu.response.TicketResponse;
 
 /**
  * A login screen that offers login via ticket code.
  */
-public class ValidateActivity extends AppCompatActivity {
-
-    /**
-     * A dummy authentication store containing known ticket codes.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "ABC123", "DEF456"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
+public class ValidateActivity extends GeneralActivity {
 
     // UI references.
     private AutoCompleteTextView mTicketCodeView;
     private View mProgressView;
     private View mLoginFormView;
+
+    private String ticketCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,24 +68,21 @@ public class ValidateActivity extends AppCompatActivity {
 
     /**
      * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
+     * If there are form errors (missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mTicketCodeView.setError(null);
 
         // Store values at the time of the login attempt.
-        String ticketCode = mTicketCodeView.getText().toString();
+        ticketCode = mTicketCodeView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid email address.
+        // Check for a valid ticket code.
         if (TextUtils.isEmpty(ticketCode)) {
             mTicketCodeView.setError(getString(R.string.error_field_required));
             focusView = mTicketCodeView;
@@ -129,8 +101,7 @@ public class ValidateActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(ticketCode, this);
-            mAuthTask.execute((Void) null);
+            new ClientSocket(this, new TicketCommand(ticketCode)).execute();
         }
     }
 
@@ -175,62 +146,26 @@ public class ValidateActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mTicketCode;
-        private final Activity mActivity;
-
-        UserLoginTask(String ticketCode, Activity activity) {
-            mTicketCode = ticketCode;
-            mActivity = activity;
+    @Override
+    public void updateInterface(Response response) {
+        showProgress(false);
+        TicketResponse ticketResponse = (TicketResponse) response;
+        if (ticketResponse.getMessage().get(0).equals("OK")){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("userID", ticketResponse.getMessage().get(1));
+            this.startActivity(intent);
+            finish();
         }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                if (credential.equals(mTicketCode)) {
-                    // Ticket code exists, return true.
-                    return true;
-                }
-            }
-
-            // TODO: ticket code does not exist
-            return false;
+        else if (ticketResponse.getMessage().get(0).equals("NU")){
+            Intent intent = new Intent(this, SignUpActivity.class);
+            intent.putExtra("ticketCode", ticketCode);
+            this.startActivity(intent);
         }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                Intent intent = new Intent(mActivity, MainActivity.class);
-                mActivity.startActivity(intent);
-                finish();
-            } else {
-                Intent intent = new Intent(mActivity, SignUpActivity.class);
-                mActivity.startActivity(intent);
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
+        else {
+            mTicketCodeView.setError(getString(R.string.error_incorrect_ticketCode));
+            mTicketCodeView.requestFocus();
         }
     }
+
 }
 

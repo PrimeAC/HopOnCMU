@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.cmu_project.fragment;
+package pt.ulisboa.tecnico.cmu.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import pt.ulisboa.tecnico.cmov.cmu_project.R;
-import pt.ulisboa.tecnico.cmov.cmu_project.fragment.dummy.MonumentsListContent;
-import pt.ulisboa.tecnico.cmov.cmu_project.fragment.dummy.MonumentsListContent.MonumentItem;
+import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
+import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent.MonumentItem;
 
 /**
  * A fragment representing a list of Items.

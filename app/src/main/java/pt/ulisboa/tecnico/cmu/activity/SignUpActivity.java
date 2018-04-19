@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.cmu_project.activity;
+package pt.ulisboa.tecnico.cmu.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -15,6 +15,7 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -25,22 +26,15 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.cmu_project.R;
+import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.command.SignUpCommand;
+import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
+import pt.ulisboa.tecnico.cmu.response.Response;
+import pt.ulisboa.tecnico.cmu.response.SignUpResponse;
+import pt.ulisboa.tecnico.cmu.response.TicketResponse;
 
-public class SignUpActivity extends AppCompatActivity {
 
-    /**
-     * A dummy authentication store containing known ticket codes.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "ABC123", "DEF456"
-    };
-
-    /**
-     * Keep track of the sign up task to ensure we can cancel it if requested.
-     */
-    private UserSignUpTask mRegisterTask = null;
+public class SignUpActivity extends GeneralActivity {
 
     //UI references
     private EditText mUsernameView;
@@ -110,8 +104,11 @@ public class SignUpActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mRegisterTask = new UserSignUpTask(username, this);
-            mRegisterTask.execute((Void) null);
+            Bundle extras = getIntent().getExtras();
+            if(extras != null) {
+                String data = extras.getString("ticketCode");
+                new ClientSocket(this, new SignUpCommand(data, username)).execute();
+            }
         }
 
 
@@ -158,63 +155,21 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserSignUpTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mUsername;
-        private final Activity mActivity;
-
-        UserSignUpTask(String username, Activity activity) {
-            mUsername = username;
-            mActivity = activity;
-
+    @Override
+    public void updateInterface(Response response) {
+        showProgress(false);
+        SignUpResponse signUpResponse = (SignUpResponse) response;
+        if (signUpResponse.getMessage().get(0).equals("OK")){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("userID", signUpResponse.getMessage().get(1));
+            this.startActivity(intent);
+            finish();
+        }
+        else if(signUpResponse.getMessage().get(0).equals("NOK")){
+            mUsernameView.setError(getString(R.string.error_occupied_username));
+            mUsernameView.requestFocus();
         }
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt registration against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                if (credential.equals(mUsername)) {
-                    // Username already exists, return false.
-                    return false;
-                }
-            }
-
-            // TODO: username does not exist
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mRegisterTask = null;
-            showProgress(false);
-
-            if (success) {
-                Intent intent = new Intent(mActivity, MainActivity.class);
-                mActivity.startActivity(intent);
-                finish();
-            } else {
-                mUsernameView.setError(getString(R.string.error_occupied_username));
-                mUsernameView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mRegisterTask = null;
-            showProgress(false);
-        }
     }
 
 }
