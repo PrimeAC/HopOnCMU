@@ -7,6 +7,6 @@ public interface CommandHandler {
 	public Response handle(TicketCommand tc);
 	public Response handle(SignUpCommand suc);
 	public Response handle(GetQuizCommand gqc);
-	public Response handle(GetMonumentsCommand gmc);
-  	public Response handle(GetRankingCommand grc);
+  public Response handle(GetMonumentsCommand gmc);
+  public Response handle(GetRankingCommand grc);
 }
