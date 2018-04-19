@@ -6,9 +6,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.response.Response;
 
 
-public class QuizActivity extends AppCompatActivity {
+public class QuizActivity extends GeneralActivity {
 
 
     private ProgressBar progressBar;
@@ -30,5 +31,10 @@ public class QuizActivity extends AppCompatActivity {
 
     private void updateTextView(TextView textView, String content){
         textView.setText(content);
+    }
+
+    @Override
+    public void updateInterface(Response response) {
+
     }
 }
