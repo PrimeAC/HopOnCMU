@@ -33,6 +33,7 @@
             android:name="pt.ulisboa.tecnico.cmu.activity.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.QuizActivity"></activity>
     </application>
 
 </manifest>
