@@ -2,7 +2,7 @@ package pt.ulisboa.tecnico.cmu.activity;
 
 import android.support.v7.app.AppCompatActivity;
 
-import pt.ulisboa.tecnico.cmu.response.Response;
+import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
 /**
  * Created by bruno on 17-04-2018.

@@ -1,17 +1,15 @@
 package pt.ulisboa.tecnico.cmu.communication;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.CookieManager;
 import java.net.Socket;
 
 import pt.ulisboa.tecnico.cmu.activity.GeneralActivity;
-import pt.ulisboa.tecnico.cmu.command.Command;
-import pt.ulisboa.tecnico.cmu.response.Response;
+import pt.ulisboa.tecnico.cmu.communication.command.Command;
+import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
 
 public class ClientSocket extends AsyncTask<Void, Void, Response> {

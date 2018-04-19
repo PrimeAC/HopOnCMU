@@ -11,9 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.activity.MainActivity;
-import pt.ulisboa.tecnico.cmu.command.GetMonumentsCommand;
-import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent.MonumentItem;
 

@@ -18,10 +18,10 @@ import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
-import pt.ulisboa.tecnico.cmu.response.Response;
+import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
-import pt.ulisboa.tecnico.cmu.command.TicketCommand;
-import pt.ulisboa.tecnico.cmu.response.TicketResponse;
+import pt.ulisboa.tecnico.cmu.communication.command.TicketCommand;
+import pt.ulisboa.tecnico.cmu.communication.response.TicketResponse;
 
 /**
  * A login screen that offers login via ticket code.
