@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.cmu.activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
 import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.response.Response;
+import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
 
 public class MainActivity extends GeneralActivity

@@ -1,9 +1,9 @@
 package pt.ulisboa.tecnico.cmu.server;
 
-import pt.ulisboa.tecnico.cmu.command.*;
+import pt.ulisboa.tecnico.cmu.communication.command.*;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.data.User;
-import pt.ulisboa.tecnico.cmu.response.*;
+import pt.ulisboa.tecnico.cmu.communication.response.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

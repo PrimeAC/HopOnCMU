@@ -3,35 +3,21 @@ package pt.ulisboa.tecnico.cmu.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.provider.ContactsContract;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.command.SignUpCommand;
+import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
-import pt.ulisboa.tecnico.cmu.response.Response;
-import pt.ulisboa.tecnico.cmu.response.SignUpResponse;
-import pt.ulisboa.tecnico.cmu.response.TicketResponse;
+import pt.ulisboa.tecnico.cmu.communication.response.Response;
+import pt.ulisboa.tecnico.cmu.communication.response.SignUpResponse;
 
 
 public class SignUpActivity extends GeneralActivity {

@@ -7,9 +7,9 @@ import java.net.Socket;
 
 import java.util.*;
 
-import pt.ulisboa.tecnico.cmu.command.Command;
+import pt.ulisboa.tecnico.cmu.communication.command.Command;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
-import pt.ulisboa.tecnico.cmu.response.Response;
+import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.User;
 
