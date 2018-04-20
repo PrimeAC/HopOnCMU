@@ -19,23 +19,11 @@ import static java.util.Map.Entry.*;
 public class Server {
 
 	//Monuments:
-	//M1 - Torre de Belém
-	//M2 - Mosteiro dos Jerónimos
-	//M3 - Padrão dos Descobrimentos
-	//M4 - Castelo de São Jorge
+	//M1 - Belem Tower
+	//M2 - Jeronimos Monastery
+	//M3 - Monument of the Discoveries
+	//M4 - Sao Jorge Castle
 
-	private static Question m1_1;
-	private static Question m1_2;
-	private static Question m1_3;
-	private static Question m2_1;
-	private static Question m2_2;
-	private static Question m2_3;
-	private static Question m3_1;
-	private static Question m3_2;
-	private static Question m3_3;
-	private static Question m4_1;
-	private static Question m4_2;
-	private static Question m4_3;
 
 	private static final int PORT = 9090;
 
@@ -54,7 +42,6 @@ public class Server {
 		initializeM2();
 		initializeM3();
 		initializeM4();
-		initializeQuizzes();
 		initializeTickets();
 
 
@@ -95,70 +82,63 @@ public class Server {
 	}
 
 	private static void initializeM1() {
-		m1_1 = new Question("Em que ano começou a construção da Torre de Belém?",
+		Question m1_1 = new Question("In what year did the construction of the Belem Tower begin?",
 				"1514", "1515", "1513", "1512", "1515");
-		m1_2 = new Question("Em que ano foi inaugurada a Torre de Belém?",
+		Question m1_2 = new Question("In what year was the Belem Tower inaugurated?",
 				"1514", "1515", "1513", "1519", "1519");
-		m1_3 = new Question("Que outro nome se dá à Torre de Belém?",
-				"Torre de São Vicente", "Torre dos Jerónimos", "Torre Francisco de Arruda", "Torre Cultural de Belém", "Torre de São Vicente");
-	}
-
-	private static void initializeM2() {
-		m2_1 = new Question("Em que ano começou a construção do Mosteiro dos Jerónimos?",
-				"1510", "1505", "1512", "1502","1502");
-		m2_2 = new Question("Em que ano foi inaugurado o Mosteiro dos Jerónimos?",
-				"1514", "1515", "1513", "1519", "1513");
-		m2_3 = new Question("Que outro nome se dá ao Mosteiro dos Jerónimos?",
-				"Torre de São Vicente", "Torre dos Jerónimos", "Mosteiro de Santa Maria de Belém", "Mosteiro de Belém", "Mosteiro de Santa Maria de Belém");
-	}
-
-	private static void initializeM3() {
-		m3_1 = new Question("Em que ano foi inaugurado o Padrão dos Descobrimentos original?",
-				"1933", "1940", "1936", "1945", "1940");
-		m3_2 = new Question("Em que ano foi inaugurado o Padrão dos Descobrimentos?",
-				"1953", "1955", "1960", "1950", "1960");
-		m3_3 = new Question("Que outro nome se dá ao Padrão dos Descobrimentos?",
-				"Monumento aos Navegantes", "Torre dos Descobrimentos", "Padrão de Santa Maria de Belém", "Monumento de Belém", "Monumento aos Navegantes");
-	}
-
-	private static void initializeM4() {
-		m4_1 = new Question("Em que século foi definido o nome do Castelo de São Jorge?",
-				"XIV", "XV", "XVI", "XVII", "XIV");
-		m4_2 = new Question("Qual o rei que definiu o nome do castelo?",
-				"D.João I", "D.Duarte I", "D.João II", "D.Fernando I", "D.João I");
-		m4_3 = new Question("Em que ano foi declarado Monumento Nacional?",
-				"1900", "1905", "1910", "1915", "1910");
-	}
-
-	private static void initializeQuizzes(){
+		Question m1_3 = new Question("What other name is given to the Belem Tower?",
+				"São Vicente Tower", "Jeronimos Tower", "Francisco de Arruda Tower", "Cultural Belem Tower", "São Vicente Tower");
 		List<Question> questions = new ArrayList<>();
 		questions.add(m1_1);
 		questions.add(m1_2);
 		questions.add(m1_3);
-		Quiz quiz1 = new Quiz("M1", "Torre de Belém", questions);
-		questions.clear();
+		Quiz quiz1 = new Quiz("M1", "Belem Tower", questions);
+		quizzes.add(quiz1);
+	}
+
+	private static void initializeM2() {
+		Question m2_1 = new Question("In what year did the construction of the Jeronimos Monastery begin?",
+				"1510", "1505", "1512", "1502","1502");
+		Question m2_2 = new Question("In what year was the Jeronimos Monastery inaugurated?",
+				"1514", "1515", "1513", "1519", "1513");
+		Question m2_3 = new Question("What other name is given to the Jeronimos Monastery?",
+				"São Vicente Tower", "Jeronimos Tower", "Santa Maria de Belem Monastery", "Belem Monastery", "Santa Maria de Belem Monastery");
+		List<Question> questions = new ArrayList<>();
 		questions.add(m2_1);
 		questions.add(m2_2);
 		questions.add(m2_3);
-		Quiz quiz2 = new Quiz("M2", "Mosteiro dos Jerónimos", questions);
-		questions.clear();
+		Quiz quiz2 = new Quiz("M2", "Jeronimos Monastery", questions);
+		quizzes.add(quiz2);
+	}
+
+	private static void initializeM3() {
+		Question m3_1 = new Question("In what year was the original Monument to the Discoveries inaugurated?",
+				"1933", "1940", "1936", "1945", "1940");
+		Question m3_2 = new Question("In what year was the Monument to the Discoveries inaugurated?",
+				"1953", "1955", "1960", "1950", "1960");
+		Question m3_3 = new Question("What other name is given to the Monument to the Discoveries?",
+				"Monument to the Navigators", "Discoveries Tower", "Standard of Santa Maria de Belem", "Belem Monument", "Monument to the Navigators");
+		List<Question> questions = new ArrayList<>();
 		questions.add(m3_1);
 		questions.add(m3_2);
 		questions.add(m3_3);
-		Quiz quiz3 = new Quiz("M3", "Padrão dos Descobrimentos", questions);
-		questions.clear();
+		Quiz quiz3 = new Quiz("M3", "Monument of the Discoveries", questions);
+		quizzes.add(quiz3);
+	}
+
+	private static void initializeM4() {
+		Question m4_1 = new Question("In what century was the name of the Sao Jorge Castle defined?",
+				"XIV", "XV", "XVI", "XVII", "XIV");
+		Question m4_2 = new Question("What king defined the name of the castle?",
+				"D.João I", "D.Duarte I", "D.João II", "D.Fernando I", "D.João I");
+		Question m4_3 = new Question("In what year was it declared a National Monument?",
+				"1900", "1905", "1910", "1915", "1910");
+		List<Question> questions = new ArrayList<>();
 		questions.add(m4_1);
 		questions.add(m4_2);
 		questions.add(m4_3);
-		Quiz quiz4 = new Quiz("M4", "Castelo de São Jorge", questions);
-		quizzes.add(quiz1);
-		quizzes.add(quiz2);
-		quizzes.add(quiz3);
+		Quiz quiz4 = new Quiz("M4", "Sao Jorge Castle", questions);
 		quizzes.add(quiz4);
-	}
-
-	public static boolean validTicket(String ticketCode) {
-		return tickets.contains(ticketCode);
 	}
 
 	private static void initializeTickets(){
@@ -172,6 +152,10 @@ public class Server {
 		tickets.add("444444");
 		tickets.add("555555");
 		tickets.add("666666");
+	}
+
+	public static boolean validTicket(String ticketCode) {
+		return tickets.contains(ticketCode);
 	}
 
 	public static List<User> getUsers(){
