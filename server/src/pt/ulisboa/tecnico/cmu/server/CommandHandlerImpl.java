@@ -21,40 +21,31 @@ public class CommandHandlerImpl implements CommandHandler {
 	@Override
 	public Response handle(TicketCommand tc) {
 		System.out.println("Este é o bilhete recebido " + tc.getTicketCode());
-		List<String> info = new ArrayList<>();
 		if (Server.validTicket(tc.getTicketCode())) {
 			for (User user : Server.getUsers()) {
 				if (user.getTicketCode().equals(tc.getTicketCode())) {
 					//ticket code already used so can login
-					info.add("OK");
-					info.add(user.getUserID());
-					return new TicketResponse(info);
+					return new TicketResponse("OK", user.getUserID(), getMonuments());
 				}
 			}
 			//ticket never used (NU), so need to create an account
-			info.add("NU");
-			return new TicketResponse(info);
+			return new TicketResponse("NU", null, null);
 		}
-		info.add("NOK");
-		return new TicketResponse(info);
+		return new TicketResponse("NOK", null, null);
 	}
 
 	@Override
 	public Response handle(SignUpCommand suc) {
 		System.out.println("Bilhete recebido " + suc.getTicketCode() + " user: " + suc.getUserID());
-		List<String> info = new ArrayList<>();
 		for (User user : Server.getUsers()) {
 			if (user.getUserID().equals(suc.getUserID())) {
 				//ticket userID already used
-				info.add("NOK");
-				return new SignUpResponse(info);
+				return new SignUpResponse("NOK", null, null);
 			}
 		}
 		User user = new User(suc.getUserID(), suc.getTicketCode(), 0);
 		Server.getUsers().add(user);
-		info.add("OK");
-		info.add(suc.getUserID());
-		return new SignUpResponse(info);
+		return new SignUpResponse("OK", suc.getUserID(), getMonuments());
 	}
 
 	@Override
@@ -68,20 +59,20 @@ public class CommandHandlerImpl implements CommandHandler {
 	}
 
 	@Override
-	public Response handle(GetMonumentsCommand gmc) {
-		List<String> monumentsNames = new ArrayList<>();
-		for (Quiz quiz : Server.getQuizzes()) {
-			monumentsNames.add(quiz.getMonumentName());
-		}
-		return new GetMonumentsResponse(monumentsNames);
-	}
-
-	@Override
 	public Response handle(GetRankingCommand grc) {
 		Map<String, Integer> unsortRanking = new HashMap<>();
 		for (User user : Server.getUsers()) {
 			unsortRanking.put(user.getUserID(), user.getScore());
 		}
 		return new GetRankingResponse(Server.sortByScore(unsortRanking));
+	}
+
+
+	private List<String> getMonuments() {
+		List<String> monumentsNames = new ArrayList<>();
+		for (Quiz quiz : Server.getQuizzes()) {
+			monumentsNames.add(quiz.getMonumentName());
+		}
+		return monumentsNames;
 	}
 }

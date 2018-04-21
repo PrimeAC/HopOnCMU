@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmu.fragment.monuments;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,23 +14,21 @@ public class MonumentsListContent {
     /**
      * An array of monuments items.
      */
-    public static final List<MonumentItem> ITEMS = new ArrayList<>();
+    public static List<MonumentItem> ITEMS = new ArrayList<>();
 
     /**
      * A map of monuments items, by ID.
      */
     public static final Map<String, MonumentItem> ITEM_MAP = new HashMap<>();
 
-    private static final int COUNT = 4;
-    private static final String[] monuments = {"Belem Tower", "Jeronimos Monastery",
-            "Monument to the Discoveries", "Sao Jorge Castle"};
 
-    static {
+    public static void addMonuments(List<String> monumentsNames){
         // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDummyItem(i,monuments[i-1]));
+        for (int i = 1; i <= monumentsNames.size(); i++) {
+            addItem(createDummyItem(i,monumentsNames.get(i-1)));
         }
     }
+
 
     private static void addItem(MonumentItem item) {
         ITEMS.add(item);

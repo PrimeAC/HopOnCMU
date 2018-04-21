@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +67,7 @@ public class MonumentsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
+            Log.i("2", "************************* 222222222222222 " + MonumentsListContent.ITEMS);
             recyclerView.setAdapter(new MyMonumentsRecyclerViewAdapter(MonumentsListContent.ITEMS, mListener));
         }
         return view;

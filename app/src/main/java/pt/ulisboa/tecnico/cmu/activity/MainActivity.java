@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
+import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent.MonumentItem;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
@@ -59,6 +61,7 @@ public class MainActivity extends GeneralActivity
             View header = navigationView.getHeaderView(0);
             ((TextView) header.findViewById(R.id.userID)).setText(data);
         }
+
 
         //Initializing Monument fragment
         // Check that the activity is using the layout version with
@@ -152,7 +155,7 @@ public class MainActivity extends GeneralActivity
     }
 
     @Override
-    public void onListFragmentInteraction(MonumentsListContent.MonumentItem item) {
+    public void onListFragmentInteraction(MonumentItem item) {
         switch (item.id) {
             case "1": //TODO Start Quiz activity for Belem Tower;
             case "2": //TODO Start Quiz activity for Jeronimos Monastery;
@@ -161,8 +164,10 @@ public class MainActivity extends GeneralActivity
         }
     }
 
+
     @Override
     public void onListFragmentInteraction(RankingListContent.RankingItem item) {
 
     }
+
 }

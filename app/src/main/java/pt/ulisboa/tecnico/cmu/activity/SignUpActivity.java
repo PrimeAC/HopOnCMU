@@ -13,11 +13,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.List;
+
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.response.SignUpResponse;
+import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
 
 
 public class SignUpActivity extends GeneralActivity {
@@ -152,13 +155,14 @@ public class SignUpActivity extends GeneralActivity {
     public void updateInterface(Response response) {
         showProgress(false);
         SignUpResponse signUpResponse = (SignUpResponse) response;
-        if (signUpResponse.getMessage().get(0).equals("OK")){
+        if (signUpResponse.getStatus().equals("OK")){
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("userID", signUpResponse.getMessage().get(1));
+            intent.putExtra("userID", signUpResponse.getUserID());
+            MonumentsListContent.addMonuments(signUpResponse.getMonumentsNames());
             this.startActivity(intent);
             finish();
         }
-        else if(signUpResponse.getMessage().get(0).equals("NOK")){
+        else if(signUpResponse.getStatus().equals("NOK")){
             mUsernameView.setError(getString(R.string.error_occupied_username));
             mUsernameView.requestFocus();
         }
