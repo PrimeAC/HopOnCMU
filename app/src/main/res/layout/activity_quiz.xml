@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/quizProgressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:progressTint="@color/colorPrimary"
         android:layout_weight="1" />
+
 
     <TextView
         android:id="@+id/text_question"
@@ -102,25 +105,27 @@
 
     </GridLayout>
 
-    <LinearLayout
+    <ProgressBar
+        android:id="@+id/right_answer_progressbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:progressTint="@color/colorQuizRightAnswer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/button_previous"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/text_button_previous" />
+    <ProgressBar
+        android:id="@+id/wrong_answer_progressbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:progressTint="@color/colorQuizWrongAnswer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="25"
+        android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/button_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/text_button_next" />
-    </LinearLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
 
 
 </LinearLayout>

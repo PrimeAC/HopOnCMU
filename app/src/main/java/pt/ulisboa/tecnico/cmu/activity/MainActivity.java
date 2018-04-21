@@ -1,26 +1,34 @@
 package pt.ulisboa.tecnico.cmu.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
 import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent.MonumentItem;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
+import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
+import pt.ulisboa.tecnico.cmu.fragment.RankingFragment;
+import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
+import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent;
 
 
 public class MainActivity extends GeneralActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MonumentsFragment.OnListFragmentInteractionListener  {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        MonumentsFragment.OnListFragmentInteractionListener,
+        RankingFragment.OnListFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +62,30 @@ public class MainActivity extends GeneralActivity
             ((TextView) header.findViewById(R.id.userID)).setText(data);
         }
 
-        //new ClientSocket(this, new GetMonumentsCommand()).execute();
+
+        //Initializing Monument fragment
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+        if (findViewById(R.id.fragment_container) != null) {
+
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create a new Fragment to be placed in the activity layout
+            MonumentsFragment firstFragment = new MonumentsFragment();
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+            firstFragment.setArguments(getIntent().getExtras());
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, firstFragment).commit();
+        }
     }
 
     @Override
@@ -95,19 +126,23 @@ public class MainActivity extends GeneralActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        /*if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*/
+        if (id == R.id.nav_monuments) {
+            MonumentsFragment newFragment = new MonumentsFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, newFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        } else if (id == R.id.nav_ranking) {
+            RankingFragment newFragment = new RankingFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, newFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        } else if (id == R.id.nav_logout) {
+            Intent intent = new Intent(this, ValidateActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -127,6 +162,12 @@ public class MainActivity extends GeneralActivity
             case "3": //TODO Start Quiz activity for Monument to the Discoveries;
             case "4": //TODO Start Quiz activity for Sao Jorge Castle;
         }
+    }
+
+
+    @Override
+    public void onListFragmentInteraction(RankingListContent.RankingItem item) {
+
     }
 
 }
