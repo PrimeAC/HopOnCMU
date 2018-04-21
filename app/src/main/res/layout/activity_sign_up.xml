@@ -58,19 +58,25 @@
                 android:textColor="@android:color/white"
                 android:textSize="24sp" />
 
-            <EditText
-                android:id="@+id/input_new_username"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:backgroundTint="@android:color/white"
-                android:hint="@string/username_input"
-                android:gravity="center_horizontal"
-                android:textColorHint="@android:color/white"
-                android:textColor="@android:color/white"
-                android:inputType="text"
-                android:singleLine="true"/>
+                android:textColorHint="@android:color/white">
+
+                <AutoCompleteTextView
+                    android:id="@+id/input_new_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:backgroundTint="@android:color/white"
+                    android:hint="@string/username_input"
+                    android:gravity="center_horizontal"
+                    android:textColor="@android:color/white"
+                    android:inputType="text"
+                    android:singleLine="true"/>
+
+            </android.support.design.widget.TextInputLayout>
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/btn_signUp"

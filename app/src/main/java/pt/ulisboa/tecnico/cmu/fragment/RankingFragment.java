@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
-import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
+import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent;
+import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent.RankingItem;
 
 /**
  * A fragment representing a list of Items.
@@ -20,9 +20,11 @@ import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentIt
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class MonumentsFragment extends Fragment {
+public class RankingFragment extends Fragment {
 
+    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
+    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
@@ -30,13 +32,13 @@ public class MonumentsFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public MonumentsFragment() {
+    public RankingFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static MonumentsFragment newInstance(int columnCount) {
-        MonumentsFragment fragment = new MonumentsFragment();
+    public static RankingFragment newInstance(int columnCount) {
+        RankingFragment fragment = new RankingFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -55,7 +57,7 @@ public class MonumentsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_monuments_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_ranking_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -66,7 +68,7 @@ public class MonumentsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyMonumentsRecyclerViewAdapter(MonumentsListContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyRankingRecyclerViewAdapter(RankingListContent.ITEMS, mListener));
         }
         return view;
     }
@@ -94,9 +96,13 @@ public class MonumentsFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(MonumentItem item);
+        // TODO: Update argument type and name
+        void onListFragmentInteraction(RankingItem item);
     }
-
 }

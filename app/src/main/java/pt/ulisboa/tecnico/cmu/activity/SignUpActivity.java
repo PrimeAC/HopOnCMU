@@ -14,8 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
+import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.response.SignUpResponse;
 
@@ -139,6 +139,13 @@ public class SignUpActivity extends GeneralActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mSignUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ValidateActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
