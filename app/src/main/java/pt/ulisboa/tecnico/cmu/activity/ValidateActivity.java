@@ -16,12 +16,16 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
 import pt.ulisboa.tecnico.cmu.communication.command.TicketCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.TicketResponse;
+import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
 
 /**
  * A login screen that offers login via ticket code.
@@ -150,13 +154,14 @@ public class ValidateActivity extends GeneralActivity {
     public void updateInterface(Response response) {
         showProgress(false);
         TicketResponse ticketResponse = (TicketResponse) response;
-        if (ticketResponse.getMessage().get(0).equals("OK")){
+        if (ticketResponse.getStatus().equals("OK")){
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("userID", ticketResponse.getMessage().get(1));
+            intent.putExtra("userID", ticketResponse.getUserID());
+            MonumentsListContent.addMonuments(ticketResponse.getMonumentsNames());
             this.startActivity(intent);
             finish();
         }
-        else if (ticketResponse.getMessage().get(0).equals("NU")){
+        else if (ticketResponse.getStatus().equals("NU")){
             Intent intent = new Intent(this, SignUpActivity.class);
             intent.putExtra("ticketCode", ticketCode);
             this.startActivity(intent);

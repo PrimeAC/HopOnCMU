@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
-import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
+import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent.MonumentItem;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
@@ -53,6 +53,8 @@ public class MainActivity extends GeneralActivity
             View header = navigationView.getHeaderView(0);
             ((TextView) header.findViewById(R.id.userID)).setText(data);
         }
+
+        //new ClientSocket(this, new GetMonumentsCommand()).execute();
     }
 
     @Override
@@ -93,7 +95,7 @@ public class MainActivity extends GeneralActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        /*if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
@@ -105,7 +107,7 @@ public class MainActivity extends GeneralActivity
 
         } else if (id == R.id.nav_send) {
 
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -114,11 +116,17 @@ public class MainActivity extends GeneralActivity
 
     @Override
     public void updateInterface(Response response) {
+        /*GetMonumentsResponse getMonumentsResponse = (GetMonumentsResponse) response;
+        if(getMonumentsResponse.getMonumentsNames() != null){
+            Log.i("1", "************************* " + getMonumentsResponse.getMonumentsNames());
+            //new MonumentsListContent(getMonumentsResponse.getMonumentsNames());
+            MonumentsListContent.addMonuments(getMonumentsResponse.getMonumentsNames());
+        }*/
 
     }
 
     @Override
-    public void onListFragmentInteraction(MonumentsListContent.MonumentItem item) {
+    public void onListFragmentInteraction(MonumentItem item) {
         switch (item.id) {
             case "1": //TODO Start Quiz activity for Belem Tower;
             case "2": //TODO Start Quiz activity for Jeronimos Monastery;
@@ -126,4 +134,5 @@ public class MainActivity extends GeneralActivity
             case "4": //TODO Start Quiz activity for Sao Jorge Castle;
         }
     }
+
 }

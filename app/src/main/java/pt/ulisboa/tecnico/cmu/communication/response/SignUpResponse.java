@@ -5,14 +5,38 @@ import java.util.List;
 public class SignUpResponse implements Response {
 
     private static final long serialVersionUID = 734457624276534179L;
-    private List<String> message;
+    private String status;
+    private String userID;
+    private List<String> monumentsNames;
 
-    public SignUpResponse(List<String> message) {
-        this.message = message;
+
+    public SignUpResponse(String status, String userID, List<String> monumentsNames) {
+        this.status = status;
+        this.userID = userID;
+        this.monumentsNames = monumentsNames;
     }
 
-    public List<String> getMessage() {
-        return this.message;
+    public String getStatus() {
+        return status;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public List<String> getMonumentsNames() {
+        return monumentsNames;
+    }
+
+    public void setMonumentsNames(List<String> monumentsNames) {
+        this.monumentsNames = monumentsNames;
+    }
 }
