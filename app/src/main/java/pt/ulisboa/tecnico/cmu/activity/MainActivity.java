@@ -116,12 +116,6 @@ public class MainActivity extends GeneralActivity
 
     @Override
     public void updateInterface(Response response) {
-        /*GetMonumentsResponse getMonumentsResponse = (GetMonumentsResponse) response;
-        if(getMonumentsResponse.getMonumentsNames() != null){
-            Log.i("1", "************************* " + getMonumentsResponse.getMonumentsNames());
-            //new MonumentsListContent(getMonumentsResponse.getMonumentsNames());
-            MonumentsListContent.addMonuments(getMonumentsResponse.getMonumentsNames());
-        }*/
 
     }
 
