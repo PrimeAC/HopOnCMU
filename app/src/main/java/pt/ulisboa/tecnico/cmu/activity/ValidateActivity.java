@@ -28,6 +28,8 @@ import pt.ulisboa.tecnico.cmu.communication.response.TicketResponse;
  */
 public class ValidateActivity extends GeneralActivity {
 
+    static final int REQUEST_EXIT = 0;
+
     // UI references.
     private AutoCompleteTextView mTicketCodeView;
     private View mProgressView;
@@ -159,11 +161,20 @@ public class ValidateActivity extends GeneralActivity {
         else if (ticketResponse.getMessage().get(0).equals("NU")){
             Intent intent = new Intent(this, SignUpActivity.class);
             intent.putExtra("ticketCode", ticketCode);
-            this.startActivity(intent);
+            this.startActivityForResult(intent, REQUEST_EXIT);
         }
         else {
             mTicketCodeView.setError(getString(R.string.error_incorrect_ticketCode));
             mTicketCodeView.requestFocus();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_EXIT)
+        {
+            finish();
         }
     }
 

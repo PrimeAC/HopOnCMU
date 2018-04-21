@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmu.fragment.dummy;
+package pt.ulisboa.tecnico.cmu.fragment.monuments;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,10 +45,16 @@ public class MonumentsListContent {
     public static class MonumentItem {
         public final String id;
         public final String content;
+        public boolean answered;
 
         public MonumentItem(String id, String content) {
             this.id = id;
             this.content = content;
+            this.answered = false;
+        }
+
+        public void setAnswered(){
+            answered = true;
         }
 
         @Override
