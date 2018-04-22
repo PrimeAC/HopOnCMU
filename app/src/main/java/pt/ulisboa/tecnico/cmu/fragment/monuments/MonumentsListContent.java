@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.cmu.fragment.monuments;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

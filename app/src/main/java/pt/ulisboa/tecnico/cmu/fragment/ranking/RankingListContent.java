@@ -23,13 +23,18 @@ public class RankingListContent {
      */
     public static final Map<String, RankingItem> ITEM_MAP = new HashMap<>();
 
-    private static final int COUNT = 4;
-
-    static {
+    public static void updateRanking(Map<String, Integer> ranking){
         // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDummyItem(i));
+        int i = 1;
+        for (Map.Entry<String, Integer> entry: ranking.entrySet()) {
+            addItem(createDummyItem(i, entry.getKey(), entry.getValue()));
+            i++;
         }
+    }
+
+    public static void deleteRanking(){
+        ITEMS.clear();
+        ITEM_MAP.clear();
     }
 
     private static void addItem(RankingItem item) {
@@ -37,8 +42,8 @@ public class RankingListContent {
         ITEM_MAP.put(item.id, item);
     }
 
-    private static RankingItem createDummyItem(int position) {
-        return new RankingItem(String.valueOf(position), "Item " + position, makeDetails(position));
+    private static RankingItem createDummyItem(int position, String userID, int userScore) {
+        return new RankingItem(String.valueOf(position), userID + ":" + userScore, makeDetails(position));
     }
 
     private static String makeDetails(int position) {
