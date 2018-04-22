@@ -67,7 +67,6 @@ public class MonumentsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            Log.i("2", "************************* 222222222222222 " + MonumentsListContent.ITEMS);
             recyclerView.setAdapter(new MyMonumentsRecyclerViewAdapter(MonumentsListContent.ITEMS, mListener));
         }
         return view;

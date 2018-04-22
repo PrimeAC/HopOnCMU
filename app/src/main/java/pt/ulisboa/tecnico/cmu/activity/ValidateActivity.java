@@ -16,8 +16,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
@@ -25,7 +23,7 @@ import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
 import pt.ulisboa.tecnico.cmu.communication.command.TicketCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.TicketResponse;
-import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
+import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 
 /**
  * A login screen that offers login via ticket code.

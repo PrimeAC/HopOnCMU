@@ -13,14 +13,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.response.SignUpResponse;
-import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
+import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
+
 
 
 public class SignUpActivity extends GeneralActivity {

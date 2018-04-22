@@ -16,12 +16,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
-import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent.MonumentItem;
+import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
+import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
-import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
 import pt.ulisboa.tecnico.cmu.fragment.RankingFragment;
-import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent;
 
 
@@ -139,6 +138,7 @@ public class MainActivity extends GeneralActivity
             transaction.addToBackStack(null);
             transaction.commit();
         } else if (id == R.id.nav_logout) {
+            MonumentsListContent.deleteMonuments();
             Intent intent = new Intent(this, ValidateActivity.class);
             startActivity(intent);
             finish();

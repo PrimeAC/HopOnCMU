@@ -29,6 +29,10 @@ public class MonumentsListContent {
         }
     }
 
+    public static void deleteMonuments() {
+        ITEMS.clear();
+        ITEM_MAP.clear();
+    }
 
     private static void addItem(MonumentItem item) {
         ITEMS.add(item);
