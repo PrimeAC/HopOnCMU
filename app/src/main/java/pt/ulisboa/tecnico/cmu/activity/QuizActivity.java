@@ -19,7 +19,7 @@ public class QuizActivity extends GeneralActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        this.progressBar = (ProgressBar) findViewById(R.id.quizProgressBar);
 
         //TODO Receive question ans answers from server and apply to view
     }

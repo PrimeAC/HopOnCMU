@@ -1,31 +1,28 @@
 package pt.ulisboa.tecnico.cmu.fragment;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment.OnListFragmentInteractionListener;
-import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent;
-import pt.ulisboa.tecnico.cmu.fragment.dummy.MonumentsListContent.MonumentItem;
+import pt.ulisboa.tecnico.cmu.fragment.RankingFragment.OnListFragmentInteractionListener;
+import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent.RankingItem;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link String} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link RankingItem} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyMonumentsRecyclerViewAdapter extends RecyclerView.Adapter<MyMonumentsRecyclerViewAdapter.ViewHolder> {
+public class MyRankingRecyclerViewAdapter extends RecyclerView.Adapter<MyRankingRecyclerViewAdapter.ViewHolder> {
 
-    private final List<MonumentItem> mValues;
+    private final List<RankingItem> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyMonumentsRecyclerViewAdapter(List<MonumentItem> items, OnListFragmentInteractionListener listener) {
+    public MyRankingRecyclerViewAdapter(List<RankingItem> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -33,7 +30,7 @@ public class MyMonumentsRecyclerViewAdapter extends RecyclerView.Adapter<MyMonum
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_monuments, parent, false);
+                .inflate(R.layout.fragment_ranking, parent, false);
         return new ViewHolder(view);
     }
 
@@ -42,7 +39,6 @@ public class MyMonumentsRecyclerViewAdapter extends RecyclerView.Adapter<MyMonum
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
-        holder.mContentView.setChecked(mValues.get(position).answered);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,14 +60,14 @@ public class MyMonumentsRecyclerViewAdapter extends RecyclerView.Adapter<MyMonum
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mIdView;
-        public final CheckedTextView mContentView;
-        public MonumentItem mItem;
+        public final TextView mContentView;
+        public RankingItem mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (CheckedTextView) view.findViewById(R.id.content);
+            mContentView = (TextView) view.findViewById(R.id.content);
         }
 
         @Override
