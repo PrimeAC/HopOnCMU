@@ -9,3 +9,5 @@
 .externalNativeBuild
 *.class
 app/build/
+server/.idea/workspace.xml
+.idea/misc.xml
