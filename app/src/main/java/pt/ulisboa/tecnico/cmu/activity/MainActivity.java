@@ -15,6 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
+import pt.ulisboa.tecnico.cmu.communication.command.GetRankingCommand;
+import pt.ulisboa.tecnico.cmu.communication.response.GetRankingResponse;
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
@@ -29,12 +32,16 @@ public class MainActivity extends GeneralActivity
         MonumentsFragment.OnListFragmentInteractionListener,
         RankingFragment.OnListFragmentInteractionListener{
 
+    private boolean rankingPressed = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        new ClientSocket(this, new GetRankingCommand()).execute();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -126,18 +133,24 @@ public class MainActivity extends GeneralActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_monuments) {
+            rankingPressed = false;
             MonumentsFragment newFragment = new MonumentsFragment();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, newFragment);
             transaction.addToBackStack(null);
             transaction.commit();
         } else if (id == R.id.nav_ranking) {
+            if(!rankingPressed){
+                new ClientSocket(this, new GetRankingCommand()).execute();
+            }
+            rankingPressed = true;
             RankingFragment newFragment = new RankingFragment();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, newFragment);
             transaction.addToBackStack(null);
             transaction.commit();
         } else if (id == R.id.nav_logout) {
+            rankingPressed = false;
             MonumentsListContent.deleteMonuments();
             Intent intent = new Intent(this, ValidateActivity.class);
             startActivity(intent);
@@ -151,7 +164,11 @@ public class MainActivity extends GeneralActivity
 
     @Override
     public void updateInterface(Response response) {
-
+        if (response instanceof GetRankingResponse) {
+            RankingListContent.deleteRanking();
+            GetRankingResponse getRankingResponse = (GetRankingResponse) response;
+            RankingListContent.updateRanking(getRankingResponse.getRanking());
+        }
     }
 
     @Override
