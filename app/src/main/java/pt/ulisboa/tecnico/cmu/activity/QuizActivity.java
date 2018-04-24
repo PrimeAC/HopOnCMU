@@ -8,10 +8,14 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
+import pt.ulisboa.tecnico.cmu.communication.command.SubmitQuizCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
+import pt.ulisboa.tecnico.cmu.communication.response.SubmitQuizResponse;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 
@@ -23,7 +27,7 @@ public class QuizActivity extends GeneralActivity {
 
     private String solution;
     private int questionNumber;
-    //private int numberOfQuestions;
+    private List<String> answers = new ArrayList<>();
 
 
     @Override
@@ -45,6 +49,8 @@ public class QuizActivity extends GeneralActivity {
         buttonA.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
+                //checkAnswer(((TextView) findViewById(R.id.text_answer_A)).getText().toString());
+                answers.add(((TextView) findViewById(R.id.text_answer_A)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -54,6 +60,8 @@ public class QuizActivity extends GeneralActivity {
         buttonB.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
+                //checkAnswer(((TextView) findViewById(R.id.text_answer_B)).getText().toString());
+                answers.add(((TextView) findViewById(R.id.text_answer_B)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -63,6 +71,8 @@ public class QuizActivity extends GeneralActivity {
         buttonC.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
+                //checkAnswer(((TextView) findViewById(R.id.text_answer_C)).getText().toString());
+                answers.add(((TextView) findViewById(R.id.text_answer_C)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -72,6 +82,8 @@ public class QuizActivity extends GeneralActivity {
         buttonD.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
+                //checkAnswer(((TextView) findViewById(R.id.text_answer_D)).getText().toString());
+                answers.add(((TextView) findViewById(R.id.text_answer_D)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -81,6 +93,14 @@ public class QuizActivity extends GeneralActivity {
 
     private void incrementProgressBar(double amount){
         progressBar.incrementProgressBy((int) amount);
+    }
+
+    private void setRightProgressBar(double amount, ProgressBar rightProgressBar){
+        rightProgressBar.setProgress((int) amount);
+    }
+
+    private void setWrongProgressBar(double amount, ProgressBar wrongProgressBar){
+        wrongProgressBar.setProgress((int) amount);
     }
 
     private void updateTextView(TextView textView, String content){
@@ -98,21 +118,45 @@ public class QuizActivity extends GeneralActivity {
             questionNumber++;
         }
         else {
-            updateTextView((TextView) findViewById(R.id.text_question), "Submited your answers to the server");
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            new ClientSocket(this, new SubmitQuizCommand(getIntent().getExtras().getString("quizName"),
+                    answers, getIntent().getExtras().getString("userID"))).execute();
         }
     }
 
     private void checkAnswer(String answer) {
+        ProgressBar rightProgressBar = (ProgressBar) findViewById(R.id.right_answer_progressbar);
+        ProgressBar wrongProgressBar = (ProgressBar) findViewById(R.id.wrong_answer_progressbar);
+        int right = rightProgressBar.getProgress();
+        int wrong = wrongProgressBar.getProgress();
+        int total = right + wrong;
+        if(total == 0){
+            total = 1;
+        }
+        Log.i("1", "answer: " + answer + " ------- " + solution);
+        Log.i("1", "answer: " + right + " ------- " + wrong + " ----------------- " + total);
         if(answer.equals(solution)){
             // TODO: implement the check if a received answer is right and increment the bars in the bottom accordingly
+            right++;
+            Log.i("3", "right  ------- " + (double) (right+1)/(total) + "------------- " + wrong + " ----- " +right + " TOTAL: " + total);
+            setRightProgressBar((double) (right)/(total)*100, rightProgressBar);
+        }
+        else {
+            wrong++;
+            Log.i("2", "wrong ------- " + (double) (wrong+1)/(total) + "------------- " + wrong + " ----- " +right + " TOTAL: " + total);
+            setWrongProgressBar((double) (wrong)/(total)*100, wrongProgressBar);
         }
     }
 
     @Override
     public void updateInterface(Response response) {
-
+        SubmitQuizResponse submitQuizResponse = (SubmitQuizResponse) response;
+        if(submitQuizResponse.getStatus().equals("OK")){
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        else {
+            updateTextView((TextView) findViewById(R.id.text_question), "Error sending the quiz to the server");
+        }
     }
 }

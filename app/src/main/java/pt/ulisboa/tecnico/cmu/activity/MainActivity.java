@@ -29,6 +29,7 @@ import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
 import pt.ulisboa.tecnico.cmu.fragment.RankingFragment;
 import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent;
+import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent.RankingItem;
 
 import pt.ulisboa.tecnico.cmu.R;
 
@@ -39,6 +40,7 @@ public class MainActivity extends GeneralActivity
         RankingFragment.OnListFragmentInteractionListener{
 
     private boolean rankingPressed = false;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class MainActivity extends GeneralActivity
             String data = extras.getString("userID");
             View header = navigationView.getHeaderView(0);
             ((TextView) header.findViewById(R.id.userID)).setText(data);
+            userID = ((TextView) header.findViewById(R.id.userID)).getText().toString();
         }
 
 
@@ -180,6 +183,8 @@ public class MainActivity extends GeneralActivity
             if(getQuizResponse.getQuiz() != null){
                 Intent intent = new Intent(this, QuizActivity.class);
                 intent.putExtra("quiz", getQuizResponse.getQuiz());
+                intent.putExtra("userID", userID);
+                intent.putExtra("quizName", getQuizResponse.getQuiz().getMonumentName());
                 this.startActivity(intent);
             }
         }
@@ -192,7 +197,7 @@ public class MainActivity extends GeneralActivity
 
 
     @Override
-    public void onListFragmentInteraction(RankingListContent.RankingItem item) {
+    public void onListFragmentInteraction(RankingItem item) {
 
     }
 

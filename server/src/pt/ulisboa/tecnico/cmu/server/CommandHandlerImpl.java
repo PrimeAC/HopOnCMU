@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmu.server;
 import pt.ulisboa.tecnico.cmu.communication.command.*;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.data.User;
+import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.communication.response.*;
 
 import java.util.ArrayList;
@@ -68,6 +69,26 @@ public class CommandHandlerImpl implements CommandHandler {
 		return new GetRankingResponse(Server.sortByScore(unsortRanking));
 	}
 
+	@Override
+	public Response handle(SubmitQuizCommand sqc) {
+		System.out.println("Recebi as respostas ao quiz " + sqc.getAnswers().get(0) + sqc.getAnswers().get(1) + sqc.getAnswers().get(2) );
+		List<Question> questions = Server.getQuiz(sqc.getQuizName());
+		int cnt = 0;
+		int score = 0;
+		if(questions != null){
+			for (Question question: questions) {
+				if(sqc.getAnswers().get(cnt).equals(question.getSolution())){
+					//need to increase the user score by one
+					score++;
+				}
+				cnt++;
+			}
+			System.out.println("Score " + score);
+			Server.updateUserScore(sqc.getUserID(), score);
+			return new SubmitQuizResponse("OK");
+		}
+		return new SubmitQuizResponse("NOK");
+	}
 
 	private List<String> getMonuments() {
 		List<String> monumentsNames = new ArrayList<>();

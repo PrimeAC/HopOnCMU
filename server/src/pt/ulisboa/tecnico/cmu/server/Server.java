@@ -13,6 +13,8 @@ import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.User;
 
+import javax.jws.soap.SOAPBinding;
+
 import static java.util.stream.Collectors.*;
 import static java.util.Map.Entry.*;
 
@@ -170,6 +172,24 @@ public class Server {
 		Map<String, Integer> sortedRanking = unsortedRanking.entrySet().stream().sorted(Collections
 				.reverseOrder(Map.Entry.comparingByValue())).collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 		return sortedRanking;
+	}
+
+	public static List<Question> getQuiz(String quizName) {
+		for (Quiz quiz: quizzes) {
+			if(quizName.equals(quiz.getMonumentName())){
+				return quiz.getQuestions();
+			}
+		}
+		return null;
+	}
+
+	public static void updateUserScore(String userID, int scoreToAdd) {
+		for (User user: users) {
+			if(user.getUserID().equals(userID)){
+				int score = user.getScore();
+				user.setScore(score + scoreToAdd);
+			}
+		}
 	}
 
 }
