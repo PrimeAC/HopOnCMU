@@ -50,6 +50,7 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(GetQuizCommand gqc) {
+		System.out.println("Quiz " + gqc.getMonumentName());
 		for (Quiz quiz : Server.getQuizzes()) {
 			if (quiz.getMonumentName().equals(gqc.getMonumentName())) {
 				return new GetQuizResponse(quiz);

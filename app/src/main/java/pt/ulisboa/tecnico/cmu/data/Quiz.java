@@ -1,8 +1,9 @@
 package pt.ulisboa.tecnico.cmu.data;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Quiz {
+public class Quiz implements Serializable{
 
     private String monumentID;
     private String monumentName;

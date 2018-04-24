@@ -82,7 +82,7 @@ public class Server {
 	}
 
 	private static void initializeM1() {
-		Question m1_1 = new Question("In what year did the construction of the Belem Tower begin?",
+		Question m1_1 = new Question("In what year did the construction of the Belem Tower began?",
 				"1514", "1515", "1513", "1512", "1515");
 		Question m1_2 = new Question("In what year was the Belem Tower inaugurated?",
 				"1514", "1515", "1513", "1519", "1519");
@@ -97,7 +97,7 @@ public class Server {
 	}
 
 	private static void initializeM2() {
-		Question m2_1 = new Question("In what year did the construction of the Jeronimos Monastery begin?",
+		Question m2_1 = new Question("In what year did the construction of the Jeronimos Monastery began?",
 				"1510", "1505", "1512", "1502","1502");
 		Question m2_2 = new Question("In what year was the Jeronimos Monastery inaugurated?",
 				"1514", "1515", "1513", "1519", "1513");
@@ -122,7 +122,7 @@ public class Server {
 		questions.add(m3_1);
 		questions.add(m3_2);
 		questions.add(m3_3);
-		Quiz quiz3 = new Quiz("M3", "Monument of the Discoveries", questions);
+		Quiz quiz3 = new Quiz("M3", "Monument to the Discoveries", questions);
 		quizzes.add(quiz3);
 	}
 
