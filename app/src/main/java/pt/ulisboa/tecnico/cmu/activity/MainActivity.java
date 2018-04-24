@@ -10,21 +10,27 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
 import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
+import pt.ulisboa.tecnico.cmu.communication.command.GetQuizCommand;
 import pt.ulisboa.tecnico.cmu.communication.command.GetRankingCommand;
+import pt.ulisboa.tecnico.cmu.communication.response.GetQuizResponse;
 import pt.ulisboa.tecnico.cmu.communication.response.GetRankingResponse;
+import pt.ulisboa.tecnico.cmu.communication.response.Response;
+
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
-import pt.ulisboa.tecnico.cmu.R;
-import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.fragment.RankingFragment;
 import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent;
+
+import pt.ulisboa.tecnico.cmu.R;
 
 
 public class MainActivity extends GeneralActivity
@@ -169,16 +175,19 @@ public class MainActivity extends GeneralActivity
             GetRankingResponse getRankingResponse = (GetRankingResponse) response;
             RankingListContent.updateRanking(getRankingResponse.getRanking());
         }
+        if (response instanceof GetQuizResponse) {
+            GetQuizResponse getQuizResponse = (GetQuizResponse) response;
+            if(getQuizResponse.getQuiz() != null){
+                Intent intent = new Intent(this, QuizActivity.class);
+                intent.putExtra("quiz", getQuizResponse.getQuiz());
+                this.startActivity(intent);
+            }
+        }
     }
 
     @Override
     public void onListFragmentInteraction(MonumentItem item) {
-        switch (item.id) {
-            case "1": //TODO Start Quiz activity for Belem Tower;
-            case "2": //TODO Start Quiz activity for Jeronimos Monastery;
-            case "3": //TODO Start Quiz activity for Monument to the Discoveries;
-            case "4": //TODO Start Quiz activity for Sao Jorge Castle;
-        }
+        new ClientSocket(this, new GetQuizCommand(item.content)).execute();
     }
 
 
