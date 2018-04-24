@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -192,7 +193,10 @@ public class MainActivity extends GeneralActivity
 
     @Override
     public void onListFragmentInteraction(MonumentItem item) {
-        new ClientSocket(this, new GetQuizCommand(item.content)).execute();
+        if(!item.answered){
+            item.answered = true;
+            new ClientSocket(this, new GetQuizCommand(item.content)).execute();
+        }
     }
 
 

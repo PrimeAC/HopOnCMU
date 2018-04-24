@@ -152,6 +152,7 @@ public class QuizActivity extends GeneralActivity {
         SubmitQuizResponse submitQuizResponse = (SubmitQuizResponse) response;
         if(submitQuizResponse.getStatus().equals("OK")){
             Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("userID", getIntent().getExtras().getString("userID"));
             startActivity(intent);
             finish();
         }

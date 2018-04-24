@@ -13,8 +13,6 @@ import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.User;
 
-import javax.jws.soap.SOAPBinding;
-
 import static java.util.stream.Collectors.*;
 import static java.util.Map.Entry.*;
 
@@ -187,6 +185,7 @@ public class Server {
 		for (User user: users) {
 			if(user.getUserID().equals(userID)){
 				int score = user.getScore();
+				System.out.println("SCORE: " + score + " SCORE TO ADD: " + scoreToAdd);
 				user.setScore(score + scoreToAdd);
 			}
 		}
