@@ -151,13 +151,19 @@ public class QuizActivity extends GeneralActivity {
     public void updateInterface(Response response) {
         SubmitQuizResponse submitQuizResponse = (SubmitQuizResponse) response;
         if(submitQuizResponse.getStatus().equals("OK")){
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("userID", getIntent().getExtras().getString("userID"));
-            startActivity(intent);
+            //Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent();
+            //intent.putExtra("userID", getIntent().getExtras().getString("userID"));
+            intent.putExtra("quizName", getIntent().getExtras().getString("quizName"));
+            setResult(RESULT_OK, intent);
+            //startActivity(intent);
             finish();
         }
         else {
             updateTextView((TextView) findViewById(R.id.text_question), "Error sending the quiz to the server");
         }
     }
+
+
+
 }

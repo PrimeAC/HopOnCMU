@@ -42,6 +42,7 @@ public class MainActivity extends GeneralActivity
 
     private boolean rankingPressed = false;
     private String userID;
+    private int REQUEST_EXIT = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,12 +182,12 @@ public class MainActivity extends GeneralActivity
         }
         if (response instanceof GetQuizResponse) {
             GetQuizResponse getQuizResponse = (GetQuizResponse) response;
-            if(getQuizResponse.getQuiz() != null){
+            if(getQuizResponse.getQuiz() != null) {
                 Intent intent = new Intent(this, QuizActivity.class);
                 intent.putExtra("quiz", getQuizResponse.getQuiz());
                 intent.putExtra("userID", userID);
                 intent.putExtra("quizName", getQuizResponse.getQuiz().getMonumentName());
-                this.startActivity(intent);
+                this.startActivityForResult(intent, REQUEST_EXIT);
             }
         }
     }
@@ -194,7 +195,7 @@ public class MainActivity extends GeneralActivity
     @Override
     public void onListFragmentInteraction(MonumentItem item) {
         if(!item.answered){
-            item.answered = true;
+            //item.answered = true;
             new ClientSocket(this, new GetQuizCommand(item.content)).execute();
         }
     }
@@ -203,6 +204,27 @@ public class MainActivity extends GeneralActivity
     @Override
     public void onListFragmentInteraction(RankingItem item) {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == REQUEST_EXIT) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                String quizName = data.getStringExtra("quizName");
+                Log.i("123", "-----------------------------------1 " + quizName);
+
+                for (MonumentItem item : MonumentsListContent.getITEMS()) {
+                    if(item.content.equals(quizName)){
+                        item.answered = true;
+                    }
+                }
+            }
+            else {
+                Log.i("123", "-----------------------------------*********************");
+            }
+        }
     }
 
 }
