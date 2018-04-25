@@ -26,7 +26,7 @@ public class CommandHandlerImpl implements CommandHandler {
 			for (User user : Server.getUsers()) {
 				if (user.getTicketCode().equals(tc.getTicketCode())) {
 					//ticket code already used so can login
-					return new TicketResponse("OK", user.getUserID(), getMonuments());
+					return new TicketResponse("OK", user.getUserID(), getMonuments(user));
 				}
 			}
 			//ticket never used (NU), so need to create an account
@@ -46,7 +46,7 @@ public class CommandHandlerImpl implements CommandHandler {
 		}
 		User user = new User(suc.getUserID(), suc.getTicketCode(), 0);
 		Server.getUsers().add(user);
-		return new SignUpResponse("OK", suc.getUserID(), getMonuments());
+		return new SignUpResponse("OK", suc.getUserID(), getMonuments(user));
 	}
 
 	@Override
@@ -90,10 +90,15 @@ public class CommandHandlerImpl implements CommandHandler {
 		return new SubmitQuizResponse("NOK");
 	}
 
-	private List<String> getMonuments() {
+	private List<String> getMonuments(User user) {
 		List<String> monumentsNames = new ArrayList<>();
 		for (Quiz quiz : Server.getQuizzes()) {
-			monumentsNames.add(quiz.getMonumentName());
+		    if(quiz.getUserAnswers().containsKey(user)){
+                monumentsNames.add(quiz.getMonumentName() + "|T");
+            }
+            else {
+                monumentsNames.add(quiz.getMonumentName() + "|F");
+            }
 		}
 		return monumentsNames;
 	}
