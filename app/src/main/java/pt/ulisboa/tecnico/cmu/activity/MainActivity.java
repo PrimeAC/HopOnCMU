@@ -213,7 +213,6 @@ public class MainActivity extends GeneralActivity
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 String quizName = data.getStringExtra("quizName");
-                Log.i("123", "-----------------------------------1 " + quizName);
 
                 for (MonumentItem item : MonumentsListContent.getITEMS()) {
                     if(item.content.equals(quizName)){

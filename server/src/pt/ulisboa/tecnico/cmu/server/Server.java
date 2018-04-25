@@ -181,12 +181,28 @@ public class Server {
 		return null;
 	}
 
-	public static void updateUserScore(String userID, int scoreToAdd) {
+	public static void updateUserScore(String userID, int scoreToAdd, String quizName) {
 		for (User user: users) {
 			if(user.getUserID().equals(userID)){
 				int score = user.getScore();
 				System.out.println("SCORE: " + score + " SCORE TO ADD: " + scoreToAdd);
 				user.setScore(score + scoreToAdd);
+				for (Quiz quiz: quizzes) {
+					if (quiz.getMonumentName().equals(quizName)){
+						Map<User, Integer> userAnswers = quiz.getUserAnswers();
+						if (userAnswers.get(user) != null) {
+							System.out.println("ANTES " + userAnswers.get(user));
+							userAnswers.computeIfPresent(user, (k, v) -> v + scoreToAdd);
+							System.out.println("DEPOIS " + userAnswers.get(user));
+							quiz.setUserAnswers(userAnswers);
+						}
+						else {
+
+							userAnswers.put(user, scoreToAdd);
+							System.out.println("DEPOIS222 " + userAnswers.get(user));
+						}
+					}
+				}
 			}
 		}
 	}

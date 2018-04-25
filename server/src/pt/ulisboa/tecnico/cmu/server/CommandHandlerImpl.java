@@ -84,7 +84,7 @@ public class CommandHandlerImpl implements CommandHandler {
 				cnt++;
 			}
 			System.out.println("Score " + score);
-			Server.updateUserScore(sqc.getUserID(), score);
+			Server.updateUserScore(sqc.getUserID(), score, sqc.getQuizName());
 			return new SubmitQuizResponse("OK");
 		}
 		return new SubmitQuizResponse("NOK");
