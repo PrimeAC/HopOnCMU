@@ -177,7 +177,9 @@ public class ValidateActivity extends GeneralActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_EXIT)
         {
-            finish();
+            if(resultCode == RESULT_OK){
+                finish();
+            }
         }
     }
 

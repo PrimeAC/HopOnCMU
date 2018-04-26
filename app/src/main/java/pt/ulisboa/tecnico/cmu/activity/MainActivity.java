@@ -198,6 +198,9 @@ public class MainActivity extends GeneralActivity
             //item.answered = true;
             new ClientSocket(this, new GetQuizCommand(item.content)).execute();
         }
+        else {
+            //TODO: implement the answered quiz to display to user
+        }
     }
 
 
