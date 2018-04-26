@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmu.server;
 import pt.ulisboa.tecnico.cmu.communication.command.*;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.data.User;
+import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.communication.response.*;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class CommandHandlerImpl implements CommandHandler {
 			for (User user : Server.getUsers()) {
 				if (user.getTicketCode().equals(tc.getTicketCode())) {
 					//ticket code already used so can login
-					return new TicketResponse("OK", user.getUserID(), getMonuments());
+					return new TicketResponse("OK", user.getUserID(), getMonuments(user));
 				}
 			}
 			//ticket never used (NU), so need to create an account
@@ -45,7 +46,7 @@ public class CommandHandlerImpl implements CommandHandler {
 		}
 		User user = new User(suc.getUserID(), suc.getTicketCode(), 0);
 		Server.getUsers().add(user);
-		return new SignUpResponse("OK", suc.getUserID(), getMonuments());
+		return new SignUpResponse("OK", suc.getUserID(), getMonuments(user));
 	}
 
 	@Override
@@ -68,11 +69,36 @@ public class CommandHandlerImpl implements CommandHandler {
 		return new GetRankingResponse(Server.sortByScore(unsortRanking));
 	}
 
+	@Override
+	public Response handle(SubmitQuizCommand sqc) {
+		System.out.println("Recebi as respostas ao quiz " + sqc.getAnswers().get(0) + sqc.getAnswers().get(1) + sqc.getAnswers().get(2) );
+		List<Question> questions = Server.getQuiz(sqc.getQuizName());
+		int cnt = 0;
+		int score = 0;
+		if(questions != null){
+			for (Question question: questions) {
+				if(sqc.getAnswers().get(cnt).equals(question.getSolution())){
+					//need to increase the user score by one
+					score++;
+				}
+				cnt++;
+			}
+			System.out.println("Score " + score);
+			Server.updateUserScore(sqc.getUserID(), score, sqc.getQuizName());
+			return new SubmitQuizResponse("OK");
+		}
+		return new SubmitQuizResponse("NOK");
+	}
 
-	private List<String> getMonuments() {
+	private List<String> getMonuments(User user) {
 		List<String> monumentsNames = new ArrayList<>();
 		for (Quiz quiz : Server.getQuizzes()) {
-			monumentsNames.add(quiz.getMonumentName());
+		    if(quiz.getUserAnswers().containsKey(user)){
+                monumentsNames.add(quiz.getMonumentName() + "|T");
+            }
+            else {
+                monumentsNames.add(quiz.getMonumentName() + "|F");
+            }
 		}
 		return monumentsNames;
 	}

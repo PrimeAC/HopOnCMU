@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,7 @@ import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
 import pt.ulisboa.tecnico.cmu.fragment.RankingFragment;
 import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent;
+import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent.RankingItem;
 
 import pt.ulisboa.tecnico.cmu.R;
 
@@ -39,6 +41,8 @@ public class MainActivity extends GeneralActivity
         RankingFragment.OnListFragmentInteractionListener{
 
     private boolean rankingPressed = false;
+    private String userID;
+    private int REQUEST_EXIT = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,7 @@ public class MainActivity extends GeneralActivity
             String data = extras.getString("userID");
             View header = navigationView.getHeaderView(0);
             ((TextView) header.findViewById(R.id.userID)).setText(data);
+            userID = ((TextView) header.findViewById(R.id.userID)).getText().toString();
         }
 
 
@@ -177,23 +182,51 @@ public class MainActivity extends GeneralActivity
         }
         if (response instanceof GetQuizResponse) {
             GetQuizResponse getQuizResponse = (GetQuizResponse) response;
-            if(getQuizResponse.getQuiz() != null){
+            if(getQuizResponse.getQuiz() != null) {
                 Intent intent = new Intent(this, QuizActivity.class);
                 intent.putExtra("quiz", getQuizResponse.getQuiz());
-                this.startActivity(intent);
+                intent.putExtra("userID", userID);
+                intent.putExtra("quizName", getQuizResponse.getQuiz().getMonumentName());
+                this.startActivityForResult(intent, REQUEST_EXIT);
             }
         }
     }
 
     @Override
     public void onListFragmentInteraction(MonumentItem item) {
-        new ClientSocket(this, new GetQuizCommand(item.content)).execute();
+        if(!item.answered){
+            //item.answered = true;
+            new ClientSocket(this, new GetQuizCommand(item.content)).execute();
+        }
+        else {
+            //TODO: implement the answered quiz to display to user
+        }
     }
 
 
     @Override
-    public void onListFragmentInteraction(RankingListContent.RankingItem item) {
+    public void onListFragmentInteraction(RankingItem item) {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == REQUEST_EXIT) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                String quizName = data.getStringExtra("quizName");
+
+                for (MonumentItem item : MonumentsListContent.getITEMS()) {
+                    if(item.content.equals(quizName)){
+                        item.answered = true;
+                    }
+                }
+            }
+            else {
+                Log.i("123", "-----------------------------------*********************");
+            }
+        }
     }
 
 }

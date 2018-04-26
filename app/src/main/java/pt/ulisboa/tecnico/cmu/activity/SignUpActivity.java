@@ -144,12 +144,12 @@ public class SignUpActivity extends GeneralActivity {
         }
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         Intent intent = new Intent(this, ValidateActivity.class);
         startActivity(intent);
         finish();
-    }
+    }*/
 
     @Override
     public void updateInterface(Response response) {
@@ -159,6 +159,8 @@ public class SignUpActivity extends GeneralActivity {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("userID", signUpResponse.getUserID());
             MonumentsListContent.addMonuments(signUpResponse.getMonumentsNames());
+            Intent previousIntent = new Intent();
+            setResult(RESULT_OK, previousIntent);
             this.startActivity(intent);
             finish();
         }

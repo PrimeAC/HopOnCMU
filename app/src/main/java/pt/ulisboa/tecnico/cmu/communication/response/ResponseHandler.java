@@ -6,4 +6,5 @@ public interface ResponseHandler {
 	public void handle(SignUpResponse sur);
 	public void handle(GetQuizResponse gqr);
   	public void handle(GetRankingResponse grr);
+  	public void handle(SubmitQuizResponse sqr);
 }

@@ -8,4 +8,5 @@ public interface CommandHandler {
 	public Response handle(SignUpCommand suc);
 	public Response handle(GetQuizCommand gqc);
   	public Response handle(GetRankingCommand grc);
+  	public Response handle(SubmitQuizCommand sqc);
 }
