@@ -7,14 +7,16 @@ import java.util.List;
 public class SubmitQuizCommand implements Command{
 
     private static final long serialVersionUID = -8807331723807741905L;
-    private List<String> answers;
     private String quizName;
+    private List<String> answers;
     private String userID;
+    private String sessionID;
 
-    public SubmitQuizCommand(String quizName ,List<String> answers, String userID) {
+    public SubmitQuizCommand(String quizName ,List<String> answers, String userID, String sessionID) {
         this.quizName = quizName;
         this.answers = answers;
         this.userID = userID;
+        this.sessionID = sessionID;
     }
 
     @Override
@@ -44,5 +46,13 @@ public class SubmitQuizCommand implements Command{
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public String getSessionID() {
+        return sessionID;
+    }
+
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
     }
 }

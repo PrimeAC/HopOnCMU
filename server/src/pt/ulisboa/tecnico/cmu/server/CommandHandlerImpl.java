@@ -70,41 +70,50 @@ public class CommandHandlerImpl implements CommandHandler {
 	@Override
 	public Response handle(GetQuizCommand gqc) {
 		System.out.println("Quiz " + gqc.getMonumentName());
-		for (Quiz quiz : Server.getQuizzes()) {
-			if (quiz.getMonumentName().equals(gqc.getMonumentName())) {
-				return new GetQuizResponse(quiz);
-			}
-		}
-		return new GetQuizResponse(null);
-	}
+		if (validateSessionID(gqc.getSessionID(), gqc.getUserID())) {
+            for (Quiz quiz : Server.getQuizzes()) {
+                if (quiz.getMonumentName().equals(gqc.getMonumentName())) {
+                    return new GetQuizResponse(quiz);
+                }
+            }
+        }
+        return new GetQuizResponse(null);
+    }
 
 	@Override
 	public Response handle(GetRankingCommand grc) {
-		Map<String, Integer> unsortRanking = new HashMap<>();
-		for (User user : Server.getUsers()) {
-			unsortRanking.put(user.getUserID(), user.getScore());
-		}
-		return new GetRankingResponse(Server.sortByScore(unsortRanking));
+	    System.out.println("recebi um get ranking " + grc.getSessionID() + " //// " + grc.getUserID());
+        if (validateSessionID(grc.getSessionID(), grc.getUserID())) {
+            System.out.println("entrei no get ranking");
+            Map<String, Integer> unsortRanking = new HashMap<>();
+            for (User user : Server.getUsers()) {
+                unsortRanking.put(user.getUserID(), user.getScore());
+            }
+            return new GetRankingResponse(Server.sortByScore(unsortRanking));
+        }
+        return new GetRankingResponse(null);
 	}
 
 	@Override
 	public Response handle(SubmitQuizCommand sqc) {
 		System.out.println("Recebi as respostas ao quiz " + sqc.getAnswers().get(0) + sqc.getAnswers().get(1) + sqc.getAnswers().get(2) );
-		List<Question> questions = Server.getQuiz(sqc.getQuizName());
-		int cnt = 0;
-		int score = 0;
-		if(questions != null){
-			for (Question question: questions) {
-				if(sqc.getAnswers().get(cnt).equals(question.getSolution())){
-					//need to increase the user score by one
-					score++;
-				}
-				cnt++;
-			}
-			System.out.println("Score " + score);
-			Server.updateUserScore(sqc.getUserID(), score, sqc.getQuizName());
-			return new SubmitQuizResponse("OK");
-		}
+        if (validateSessionID(sqc.getSessionID(), sqc.getUserID())) {
+            List<Question> questions = Server.getQuiz(sqc.getQuizName());
+            int cnt = 0;
+            int score = 0;
+            if(questions != null){
+                for (Question question: questions) {
+                    if(sqc.getAnswers().get(cnt).equals(question.getSolution())){
+                        //need to increase the user score by one
+                        score++;
+                    }
+                    cnt++;
+                }
+                System.out.println("Score " + score);
+                Server.updateUserScore(sqc.getUserID(), score, sqc.getQuizName());
+                return new SubmitQuizResponse("OK");
+            }
+        }
 		return new SubmitQuizResponse("NOK");
 	}
 
@@ -129,7 +138,6 @@ public class CommandHandlerImpl implements CommandHandler {
             System.out.println("SESSION ID: " + sessionID);
             if (notUSedSessionID(sessionID, userID)){
                 Date time = new Date();
-                System.out.println("__________________ " + time.getTime());
                 Server.updateSessionID(userID, new SessionID(sessionID, new Date()));
                 return sessionID;
             }
@@ -150,16 +158,18 @@ public class CommandHandlerImpl implements CommandHandler {
 
     private boolean validateSessionID(String sessionID, String userID) {
 	    if (Server.getSessionID().containsKey(userID)){
+	        System.out.println("tem o user");
             SessionID session = Server.getSessionID().get(userID);
             if (session.getSessionID().equals(sessionID)){
+                System.out.println("mesmo session id");
                 Date last = session.getGeneratedTime();
                 Date now = new Date();
                 long diff = Math.abs(now.getTime() - last.getTime());
                 System.out.println(diff);
-                // 300 equals 5 minutes of a session
-                if (diff < 300) {
+                // 300000 miliseconds equals 5 minutes of a session
+                if (diff < 300000) {
                     session.setGeneratedTime(now);
-                    Server.updateSessionID(userID, session);
+                    //Server.updateSessionID(userID, session);
                     return true;
                 }
                 else {

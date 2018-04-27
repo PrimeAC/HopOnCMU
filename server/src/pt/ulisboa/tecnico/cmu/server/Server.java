@@ -219,6 +219,7 @@ public class Server {
 	public static void updateSessionID(String userID, SessionID sessionID) {
 		System.out.println("time  " + sessionID.getGeneratedTime() + " sessID " + sessionID.getSessionID());
 		sessionIDs.put(userID, sessionID);
+		System.out.println(sessionIDs.get(userID).getGeneratedTime());
 	}
 
 	public static void removeSession(String userID) {
