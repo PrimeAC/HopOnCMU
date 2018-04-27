@@ -155,18 +155,22 @@ public class SignUpActivity extends GeneralActivity {
     public void updateInterface(Response response) {
         showProgress(false);
         SignUpResponse signUpResponse = (SignUpResponse) response;
-        if (signUpResponse.getStatus().equals("OK")){
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("userID", signUpResponse.getUserID());
-            MonumentsListContent.addMonuments(signUpResponse.getMonumentsNames());
-            Intent previousIntent = new Intent();
-            setResult(RESULT_OK, previousIntent);
-            this.startActivity(intent);
-            finish();
-        }
-        else if(signUpResponse.getStatus().equals("NOK")){
-            mUsernameView.setError(getString(R.string.error_occupied_username));
-            mUsernameView.requestFocus();
+        switch (signUpResponse.getStatus()) {
+            case "OK":
+                //TODO: save session id in the client database
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("userID", signUpResponse.getUserID());
+                intent.putExtra("sessionID", signUpResponse.getSessionID());
+                MonumentsListContent.addMonuments(signUpResponse.getMonumentsNames());
+                Intent previousIntent = new Intent();
+                setResult(RESULT_OK, previousIntent);
+                this.startActivity(intent);
+                finish();
+                break;
+            case "NOK":
+                mUsernameView.setError(getString(R.string.error_occupied_username));
+                mUsernameView.requestFocus();
+                break;
         }
 
     }

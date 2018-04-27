@@ -163,7 +163,5 @@ public class QuizActivity extends GeneralActivity {
             updateTextView((TextView) findViewById(R.id.text_question), "Error sending the quiz to the server");
         }
     }
-
-
-
+    
 }

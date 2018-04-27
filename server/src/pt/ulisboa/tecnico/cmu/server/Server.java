@@ -5,12 +5,14 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import pt.ulisboa.tecnico.cmu.communication.command.Command;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.data.Question;
+import pt.ulisboa.tecnico.cmu.data.SessionID;
 import pt.ulisboa.tecnico.cmu.data.User;
 
 import static java.util.stream.Collectors.*;
@@ -35,6 +37,9 @@ public class Server {
 
 	//keeps a list of valid codes
 	private static List<String> tickets = new ArrayList<>();
+
+	//keeps a map of userID: sessionID
+	private static Map<String, SessionID> sessionIDs = new HashMap<>();
 
 
 	public static void main(String[] args) throws Exception {
@@ -189,17 +194,16 @@ public class Server {
 				user.setScore(score + scoreToAdd);
 				for (Quiz quiz: quizzes) {
 					if (quiz.getMonumentName().equals(quizName)){
-						Map<User, Integer> userAnswers = quiz.getUserAnswers();
-						if (userAnswers.get(user) != null) {
-							System.out.println("ANTES " + userAnswers.get(user));
-							userAnswers.computeIfPresent(user, (k, v) -> v + scoreToAdd);
-							System.out.println("DEPOIS " + userAnswers.get(user));
+						Map<String, Integer> userAnswers = quiz.getUserAnswers();
+						if (userAnswers.get(userID) != null) {
+							System.out.println("ANTES " + userAnswers.get(userID));
+							userAnswers.computeIfPresent(userID, (k, v) -> v + scoreToAdd);
+							System.out.println("DEPOIS " + userAnswers.get(userID));
 							quiz.setUserAnswers(userAnswers);
 						}
 						else {
-
-							userAnswers.put(user, scoreToAdd);
-							System.out.println("DEPOIS222 " + userAnswers.get(user));
+							userAnswers.put(userID, scoreToAdd);
+							System.out.println("DEPOIS222 " + userAnswers.get(userID));
 						}
 					}
 				}
@@ -207,5 +211,20 @@ public class Server {
 		}
 	}
 
+
+	public static Map<String, SessionID> getSessionID() {
+		return sessionIDs;
+	}
+
+	public static void updateSessionID(String userID, SessionID sessionID) {
+		System.out.println("time  " + sessionID.getGeneratedTime() + " sessID " + sessionID.getSessionID());
+		sessionIDs.put(userID, sessionID);
+	}
+
+	public static void removeSession(String userID) {
+		System.out.println("TAMANHO ANTES " + sessionIDs.size());
+		sessionIDs.remove(userID);
+		System.out.println("TAMANHO DEPOIS 	" + sessionIDs.size());
+	}
 }
 

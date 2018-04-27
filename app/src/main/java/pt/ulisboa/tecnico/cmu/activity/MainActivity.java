@@ -42,6 +42,7 @@ public class MainActivity extends GeneralActivity
 
     private boolean rankingPressed = false;
     private String userID;
+    private String sessionID;
     private int REQUEST_EXIT = 0;
 
     @Override
@@ -73,10 +74,11 @@ public class MainActivity extends GeneralActivity
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            String data = extras.getString("userID");
+            userID = extras.getString("userID");
+            sessionID = extras.getString("sessionID");
             View header = navigationView.getHeaderView(0);
-            ((TextView) header.findViewById(R.id.userID)).setText(data);
-            userID = ((TextView) header.findViewById(R.id.userID)).getText().toString();
+            ((TextView) header.findViewById(R.id.userID)).setText(userID);
+            Log.i("##77777777##", "--------------------- " + sessionID);
         }
 
 
@@ -222,9 +224,6 @@ public class MainActivity extends GeneralActivity
                         item.answered = true;
                     }
                 }
-            }
-            else {
-                Log.i("123", "-----------------------------------*********************");
             }
         }
     }

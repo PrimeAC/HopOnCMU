@@ -1,8 +1,6 @@
 package pt.ulisboa.tecnico.cmu.data;
 
-import java.io.Serializable;
-
-public class User implements Serializable {
+public class User {
 
     private String userID;
     private String ticketCode;
