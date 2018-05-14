@@ -126,8 +126,8 @@ public class QuizActivity extends GeneralActivity {
             questionNumber++;
         }
         else {
-            new ClientSocket(this, new SubmitQuizCommand(getIntent().getExtras().getString("quizName"),
-                    answers, getIntent().getExtras().getString("userID"))).execute();
+            new ClientSocket(this, new SubmitQuizCommand(getIntent().getStringExtra("quizName"),
+                    answers, getIntent().getStringExtra("userID"), getIntent().getStringExtra("sessionID"))).execute();
         }
     }
 
@@ -150,7 +150,7 @@ public class QuizActivity extends GeneralActivity {
             //Intent intent = new Intent(this, MainActivity.class);
             Intent intent = new Intent();
             //intent.putExtra("userID", getIntent().getExtras().getString("userID"));
-            intent.putExtra("quizName", getIntent().getExtras().getString("quizName"));
+            intent.putExtra("quizName", getIntent().getStringExtra("quizName"));
             setResult(RESULT_OK, intent);
             //startActivity(intent);
             finish();
@@ -159,7 +159,5 @@ public class QuizActivity extends GeneralActivity {
             updateTextView((TextView) findViewById(R.id.text_question), "Error sending the quiz to the server");
         }
     }
-
-
 
 }

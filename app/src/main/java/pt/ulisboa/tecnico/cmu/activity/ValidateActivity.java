@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -154,21 +155,28 @@ public class ValidateActivity extends GeneralActivity {
     public void updateInterface(Response response) {
         showProgress(false);
         TicketResponse ticketResponse = (TicketResponse) response;
-        if (ticketResponse.getStatus().equals("OK")){
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("userID", ticketResponse.getUserID());
-            MonumentsListContent.addMonuments(ticketResponse.getMonumentsNames());
-            this.startActivity(intent);
-            finish();
-        }
-        else if (ticketResponse.getStatus().equals("NU")){
-            Intent intent = new Intent(this, SignUpActivity.class);
-            intent.putExtra("ticketCode", ticketCode);
-            this.startActivityForResult(intent, REQUEST_EXIT);
-        }
-        else {
-            mTicketCodeView.setError(getString(R.string.error_incorrect_ticketCode));
-            mTicketCodeView.requestFocus();
+        switch (ticketResponse.getStatus()) {
+            case "OK": {
+                //TODO: save session id in the client database
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("userID", ticketResponse.getUserID());
+                intent.putExtra("sessionID", ticketResponse.getSessionID());
+                Log.i("####", "--------------------- " + ticketResponse.getSessionID());
+                MonumentsListContent.addMonuments(ticketResponse.getMonumentsNames());
+                this.startActivity(intent);
+                finish();
+                break;
+            }
+            case "NU": {
+                Intent intent = new Intent(this, SignUpActivity.class);
+                intent.putExtra("ticketCode", ticketCode);
+                this.startActivityForResult(intent, REQUEST_EXIT);
+                break;
+            }
+            default:
+                mTicketCodeView.setError(getString(R.string.error_incorrect_ticketCode));
+                mTicketCodeView.requestFocus();
+                break;
         }
     }
 

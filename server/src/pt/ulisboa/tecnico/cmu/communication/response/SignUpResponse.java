@@ -8,12 +8,14 @@ public class SignUpResponse implements Response {
     private String status;
     private String userID;
     private List<String> monumentsNames;
+    private String sessionID;
 
 
-    public SignUpResponse(String status, String userID, List<String> monumentsNames) {
+    public SignUpResponse(String status, String userID, List<String> monumentsNames, String sessionID) {
         this.status = status;
         this.userID = userID;
         this.monumentsNames = monumentsNames;
+        this.sessionID = sessionID;
     }
 
     public String getStatus() {
@@ -38,5 +40,13 @@ public class SignUpResponse implements Response {
 
     public void setMonumentsNames(List<String> monumentsNames) {
         this.monumentsNames = monumentsNames;
+    }
+
+    public String getSessionID() {
+        return sessionID;
+    }
+
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
     }
 }
