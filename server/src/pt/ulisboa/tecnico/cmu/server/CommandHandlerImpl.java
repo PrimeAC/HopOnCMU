@@ -10,18 +10,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class CommandHandlerImpl implements CommandHandler {
 
+    private Logger LOGGER = Logger.getLogger(CommandHandlerImpl.class.getName());
+
 	@Override
 	public Response handle(HelloCommand hc) {
-		System.out.println("Received: " + hc.getMessage());
+        LOGGER.info("Received: " + hc.getMessage());
 		return new HelloResponse("Hi from Server!");
 	}
 
 	@Override
 	public Response handle(TicketCommand tc) {
-		System.out.println("Este é o bilhete recebido " + tc.getTicketCode());
+		LOGGER.info("Bilhete recebido " + tc.getTicketCode());
 		if (Server.validTicket(tc.getTicketCode())) {
 			for (User user : Server.getUsers()) {
 				if (user.getTicketCode().equals(tc.getTicketCode())) {
@@ -37,7 +40,7 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(SignUpCommand suc) {
-		System.out.println("Bilhete recebido " + suc.getTicketCode() + " user: " + suc.getUserID());
+		LOGGER.info("Bilhete recebido " + suc.getTicketCode() + " user: " + suc.getUserID());
 		for (User user : Server.getUsers()) {
 			if (user.getUserID().equals(suc.getUserID())) {
 				//ticket userID already used
@@ -51,7 +54,7 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(GetQuizCommand gqc) {
-		System.out.println("Quiz " + gqc.getMonumentName());
+        LOGGER.info("Quiz " + gqc.getMonumentName());
 		for (Quiz quiz : Server.getQuizzes()) {
 			if (quiz.getMonumentName().equals(gqc.getMonumentName())) {
 				return new GetQuizResponse(quiz);
@@ -71,7 +74,7 @@ public class CommandHandlerImpl implements CommandHandler {
 
 	@Override
 	public Response handle(SubmitQuizCommand sqc) {
-		System.out.println("Recebi as respostas ao quiz " + sqc.getAnswers().get(0) + sqc.getAnswers().get(1) + sqc.getAnswers().get(2) );
+        LOGGER.info("Recebi as respostas ao quiz " + sqc.getAnswers().get(0) + sqc.getAnswers().get(1) + sqc.getAnswers().get(2) );
 		List<Question> questions = Server.getQuiz(sqc.getQuizName());
 		int cnt = 0;
 		int score = 0;
@@ -83,7 +86,7 @@ public class CommandHandlerImpl implements CommandHandler {
 				}
 				cnt++;
 			}
-			System.out.println("Score " + score);
+            LOGGER.info("Score " + score);
 			Server.updateUserScore(sqc.getUserID(), score, sqc.getQuizName());
 			return new SubmitQuizResponse("OK");
 		}
