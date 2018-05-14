@@ -26,6 +26,10 @@ import pt.ulisboa.tecnico.cmu.communication.response.GetRankingResponse;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
 import pt.ulisboa.tecnico.cmu.data.Quiz;
+
+import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
+import pt.ulisboa.tecnico.cmu.database.UsersScoreDBHandler;
+
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
@@ -45,6 +49,8 @@ public class MainActivity extends GeneralActivity
     private String userID;
     private String sessionID;
     private int REQUEST_EXIT = 0;
+    private UsersScoreDBHandler dbscore;
+    private UserQuizDBHandler dbquiz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +179,8 @@ public class MainActivity extends GeneralActivity
             GetRankingResponse getRankingResponse = (GetRankingResponse) response;
             if (getRankingResponse.getRanking() != null){
                 RankingListContent.updateRanking(getRankingResponse.getRanking());
+                dbscore = new UsersScoreDBHandler(this);
+                dbscore.insertScore(userID, ((GetRankingResponse) response).getRanking().get(userID));
             }
             else {
                 //means that session id expired
@@ -182,6 +190,8 @@ public class MainActivity extends GeneralActivity
         if (response instanceof GetQuizResponse) {
             GetQuizResponse getQuizResponse = (GetQuizResponse) response;
             if(getQuizResponse.getQuiz() != null) {
+                dbquiz = new UserQuizDBHandler(this);
+                dbquiz.insertNameandMonumentName(userID, getQuizResponse.getQuiz().getMonumentName());
                 startQuizActivity(getQuizResponse.getQuiz());
             }
             else {

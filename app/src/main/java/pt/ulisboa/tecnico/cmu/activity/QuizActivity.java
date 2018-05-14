@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.response.SubmitQuizResponse;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
+import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
 
 
 public class QuizActivity extends GeneralActivity {
@@ -28,7 +29,9 @@ public class QuizActivity extends GeneralActivity {
     private String solution;
     private int questionNumber;
     private List<String> answers = new ArrayList<>();
-
+    private UserQuizDBHandler db;
+    private int numberOfRightAnswers;
+    private int numberOfWrongAnswers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +47,15 @@ public class QuizActivity extends GeneralActivity {
         final List<Question> questions = quiz.getQuestions();
         final int numberOfQuestions = questions.size();
         drawQuestion(questions, numberOfQuestions);
+        db = new UserQuizDBHandler(this);
 
         Button buttonA = findViewById(R.id.button_A);
         buttonA.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
-                //checkAnswer(((TextView) findViewById(R.id.text_answer_A)).getText().toString());
+                checkAnswer(((TextView) findViewById(R.id.text_answer_A)).getText().toString());
                 answers.add(((TextView) findViewById(R.id.text_answer_A)).getText().toString());
+                db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_A)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -60,8 +65,9 @@ public class QuizActivity extends GeneralActivity {
         buttonB.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
-                //checkAnswer(((TextView) findViewById(R.id.text_answer_B)).getText().toString());
+                checkAnswer(((TextView) findViewById(R.id.text_answer_B)).getText().toString());
                 answers.add(((TextView) findViewById(R.id.text_answer_B)).getText().toString());
+                db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_B)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -71,8 +77,9 @@ public class QuizActivity extends GeneralActivity {
         buttonC.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
-                //checkAnswer(((TextView) findViewById(R.id.text_answer_C)).getText().toString());
+                checkAnswer(((TextView) findViewById(R.id.text_answer_C)).getText().toString());
                 answers.add(((TextView) findViewById(R.id.text_answer_C)).getText().toString());
+                db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_C)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -82,8 +89,9 @@ public class QuizActivity extends GeneralActivity {
         buttonD.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
-                //checkAnswer(((TextView) findViewById(R.id.text_answer_D)).getText().toString());
+                checkAnswer(((TextView) findViewById(R.id.text_answer_D)).getText().toString());
                 answers.add(((TextView) findViewById(R.id.text_answer_D)).getText().toString());
+                db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_D)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -124,26 +132,12 @@ public class QuizActivity extends GeneralActivity {
     }
 
     private void checkAnswer(String answer) {
-        ProgressBar rightProgressBar = (ProgressBar) findViewById(R.id.right_answer_progressbar);
-        ProgressBar wrongProgressBar = (ProgressBar) findViewById(R.id.wrong_answer_progressbar);
-        int right = rightProgressBar.getProgress();
-        int wrong = wrongProgressBar.getProgress();
-        int total = right + wrong;
-        if(total == 0){
-            total = 1;
-        }
-        Log.i("1", "answer: " + answer + " ------- " + solution);
-        Log.i("1", "answer: " + right + " ------- " + wrong + " ----------------- " + total);
         if(answer.equals(solution)){
             // TODO: implement the check if a received answer is right and increment the bars in the bottom accordingly
-            right++;
-            Log.i("3", "right  ------- " + (double) (right+1)/(total) + "------------- " + wrong + " ----- " +right + " TOTAL: " + total);
-            setRightProgressBar((double) (right)/(total)*100, rightProgressBar);
+            numberOfRightAnswers++;
         }
         else {
-            wrong++;
-            Log.i("2", "wrong ------- " + (double) (wrong+1)/(total) + "------------- " + wrong + " ----- " +right + " TOTAL: " + total);
-            setWrongProgressBar((double) (wrong)/(total)*100, wrongProgressBar);
+            numberOfWrongAnswers++;
         }
     }
 
@@ -151,6 +145,8 @@ public class QuizActivity extends GeneralActivity {
     public void updateInterface(Response response) {
         SubmitQuizResponse submitQuizResponse = (SubmitQuizResponse) response;
         if(submitQuizResponse.getStatus().equals("OK")){
+            db = new UserQuizDBHandler(this);
+            db.updateScore(numberOfRightAnswers);
             //Intent intent = new Intent(this, MainActivity.class);
             Intent intent = new Intent();
             //intent.putExtra("userID", getIntent().getExtras().getString("userID"));

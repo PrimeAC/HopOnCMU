@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,8 @@ import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.response.SignUpResponse;
+import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
+import pt.ulisboa.tecnico.cmu.database.UsersScoreDBHandler;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 
 
@@ -29,6 +32,7 @@ public class SignUpActivity extends GeneralActivity {
     private EditText mUsernameView;
     private View mProgressView;
     private View mSignUpFormView;
+    private UsersScoreDBHandler dbscore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +162,8 @@ public class SignUpActivity extends GeneralActivity {
         switch (signUpResponse.getStatus()) {
             case "OK":
                 //TODO: save session id in the client database
+                dbscore = new UsersScoreDBHandler(this);
+                dbscore.insertName(signUpResponse.getUserID());
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("userID", signUpResponse.getUserID());
                 intent.putExtra("sessionID", signUpResponse.getSessionID());
