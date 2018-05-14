@@ -25,6 +25,8 @@ import pt.ulisboa.tecnico.cmu.communication.response.GetQuizResponse;
 import pt.ulisboa.tecnico.cmu.communication.response.GetRankingResponse;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
+import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
+import pt.ulisboa.tecnico.cmu.database.UsersScoreDBHandler;
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
@@ -43,6 +45,8 @@ public class MainActivity extends GeneralActivity
     private boolean rankingPressed = false;
     private String userID;
     private int REQUEST_EXIT = 0;
+    private UsersScoreDBHandler dbscore;
+    private UserQuizDBHandler dbquiz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,10 +183,14 @@ public class MainActivity extends GeneralActivity
             RankingListContent.deleteRanking();
             GetRankingResponse getRankingResponse = (GetRankingResponse) response;
             RankingListContent.updateRanking(getRankingResponse.getRanking());
+            dbscore = new UsersScoreDBHandler(this);
+            dbscore.insertScore(userID, ((GetRankingResponse) response).getRanking().get(userID));
         }
         if (response instanceof GetQuizResponse) {
             GetQuizResponse getQuizResponse = (GetQuizResponse) response;
             if(getQuizResponse.getQuiz() != null) {
+                dbquiz = new UserQuizDBHandler(this);
+                dbquiz.insertNameandMonumentName(userID, getQuizResponse.getQuiz().getMonumentName());
                 Intent intent = new Intent(this, QuizActivity.class);
                 intent.putExtra("quiz", getQuizResponse.getQuiz());
                 intent.putExtra("userID", userID);
