@@ -30,6 +30,7 @@ public class ClientSocket extends AsyncTask<Void, Void, Response> {
             server = new Socket("10.0.2.2", 9090);
 
             ObjectOutputStream oos = new ObjectOutputStream(server.getOutputStream());
+            //TODO Implement all security mechanisms when message sent
             oos.writeObject(command);
 
             ObjectInputStream ois = new ObjectInputStream(server.getInputStream());
@@ -52,6 +53,7 @@ public class ClientSocket extends AsyncTask<Void, Void, Response> {
 
     @Override
     protected void onPostExecute(Response o) {
+        //TODO Implement all security verification when message reception
         if (o != null) {
             generalActivity.updateInterface(o);
         }
