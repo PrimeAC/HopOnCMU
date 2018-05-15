@@ -5,7 +5,6 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import pt.ulisboa.tecnico.cmu.communication.command.Command;
@@ -177,10 +176,10 @@ public class Server {
 		return sortedRanking;
 	}
 
-	public static List<Question> getQuiz(String quizName) {
+	public static Quiz getQuiz(String quizName) {
 		for (Quiz quiz: quizzes) {
 			if(quizName.equals(quiz.getMonumentName())){
-				return quiz.getQuestions();
+				return quiz;
 			}
 		}
 		return null;
@@ -189,22 +188,13 @@ public class Server {
 	public static void updateUserScore(String userID, int scoreToAdd, String quizName) {
 		for (User user: users) {
 			if(user.getUserID().equals(userID)){
-				int score = user.getScore();
-				System.out.println("SCORE: " + score + " SCORE TO ADD: " + scoreToAdd);
+				int score = Math.round(user.getScore());
 				user.setScore(score + scoreToAdd);
 				for (Quiz quiz: quizzes) {
 					if (quiz.getMonumentName().equals(quizName)){
-						Map<String, Integer> userAnswers = quiz.getUserAnswers();
-						if (userAnswers.get(userID) != null) {
-							System.out.println("ANTES " + userAnswers.get(userID));
-							userAnswers.computeIfPresent(userID, (k, v) -> v + scoreToAdd);
-							System.out.println("DEPOIS " + userAnswers.get(userID));
-							quiz.setUserAnswers(userAnswers);
-						}
-						else {
-							userAnswers.put(userID, scoreToAdd);
-							System.out.println("DEPOIS222 " + userAnswers.get(userID));
-						}
+						Map<String, Integer> userScore = quiz.getUserScore();
+                        userScore.put(userID, scoreToAdd);
+                        quiz.setUserScore(userScore);
 					}
 				}
 			}
@@ -217,15 +207,12 @@ public class Server {
 	}
 
 	public static void updateSessionID(String userID, SessionID sessionID) {
-		System.out.println("time  " + sessionID.getGeneratedTime() + " sessID " + sessionID.getSessionID());
 		sessionIDs.put(userID, sessionID);
 		System.out.println(sessionIDs.get(userID).getGeneratedTime());
 	}
 
 	public static void removeSession(String userID) {
-		System.out.println("TAMANHO ANTES " + sessionIDs.size());
 		sessionIDs.remove(userID);
-		System.out.println("TAMANHO DEPOIS 	" + sessionIDs.size());
 	}
 }
 
