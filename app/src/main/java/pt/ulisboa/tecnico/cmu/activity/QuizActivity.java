@@ -47,7 +47,7 @@ public class QuizActivity extends GeneralActivity {
         final List<Question> questions = quiz.getQuestions();
         final int numberOfQuestions = questions.size();
         drawQuestion(questions, numberOfQuestions);
-        db = new UserQuizDBHandler(this);
+        //db = new UserQuizDBHandler(this);
 
         Button buttonA = findViewById(R.id.button_A);
         buttonA.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +55,7 @@ public class QuizActivity extends GeneralActivity {
                 // Code here executes on main thread after user presses button
                 checkAnswer(((TextView) findViewById(R.id.text_answer_A)).getText().toString());
                 answers.add(((TextView) findViewById(R.id.text_answer_A)).getText().toString());
-                db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_A)).getText().toString());
+                //db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_A)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -67,7 +67,7 @@ public class QuizActivity extends GeneralActivity {
                 // Code here executes on main thread after user presses button
                 checkAnswer(((TextView) findViewById(R.id.text_answer_B)).getText().toString());
                 answers.add(((TextView) findViewById(R.id.text_answer_B)).getText().toString());
-                db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_B)).getText().toString());
+                //db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_B)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -79,7 +79,7 @@ public class QuizActivity extends GeneralActivity {
                 // Code here executes on main thread after user presses button
                 checkAnswer(((TextView) findViewById(R.id.text_answer_C)).getText().toString());
                 answers.add(((TextView) findViewById(R.id.text_answer_C)).getText().toString());
-                db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_C)).getText().toString());
+                //db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_C)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }
@@ -91,7 +91,7 @@ public class QuizActivity extends GeneralActivity {
                 // Code here executes on main thread after user presses button
                 checkAnswer(((TextView) findViewById(R.id.text_answer_D)).getText().toString());
                 answers.add(((TextView) findViewById(R.id.text_answer_D)).getText().toString());
-                db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_D)).getText().toString());
+                //db.insertAnswers(questionNumber-1, ((TextView) findViewById(R.id.button_D)).getText().toString());
                 drawQuestion(questions, numberOfQuestions);
                 incrementProgressBar((double) 1/numberOfQuestions * 100);
             }

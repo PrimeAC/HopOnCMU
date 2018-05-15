@@ -177,10 +177,10 @@ public class Server {
 		return sortedRanking;
 	}
 
-	public static List<Question> getQuiz(String quizName) {
+	public static Quiz getQuiz(String quizName) {
 		for (Quiz quiz: quizzes) {
 			if(quizName.equals(quiz.getMonumentName())){
-				return quiz.getQuestions();
+				return quiz;
 			}
 		}
 		return null;
@@ -189,22 +189,27 @@ public class Server {
 	public static void updateUserScore(String userID, int scoreToAdd, String quizName) {
 		for (User user: users) {
 			if(user.getUserID().equals(userID)){
-				int score = user.getScore();
+				int score = Math.round(user.getScore());
 				System.out.println("SCORE: " + score + " SCORE TO ADD: " + scoreToAdd);
 				user.setScore(score + scoreToAdd);
 				for (Quiz quiz: quizzes) {
 					if (quiz.getMonumentName().equals(quizName)){
-						Map<String, Integer> userAnswers = quiz.getUserAnswers();
-						if (userAnswers.get(userID) != null) {
-							System.out.println("ANTES " + userAnswers.get(userID));
-							userAnswers.computeIfPresent(userID, (k, v) -> v + scoreToAdd);
-							System.out.println("DEPOIS " + userAnswers.get(userID));
-							quiz.setUserAnswers(userAnswers);
+						Map<String, Integer> userScore = quiz.getUserScore();
+						System.out.println("È NULL " + userScore.containsKey(userID));
+						//este if nao é preciso porque cada cliente so pode fazer cada quiz apenas uma vez
+                        //logo nunca vai conter a key e o servidor apenas tem de meter o resultado do cliente no quiz uma vez
+                        //nunca vai precisar de fazer update dentro do quiz, apenas ao score total do cliente. ou seja basta o codigo dentro do else
+						if (userScore.containsKey(userID)) {
+							System.out.println("ANTES " + userScore.get(userID));
+							userScore.computeIfPresent(userID, (k, v) -> v + scoreToAdd);
+							System.out.println("DEPOIS " + userScore.get(userID));
+							quiz.setUserScore(userScore);
 						}
 						else {
-							userAnswers.put(userID, scoreToAdd);
-							System.out.println("DEPOIS222 " + userAnswers.get(userID));
-						}
+							userScore.put(userID, scoreToAdd);
+                            quiz.setUserScore(userScore);
+                            System.out.println("DEPOIS222 " + userScore.get(userID) + "   --- " + quiz.getUserScore().get(userID));
+                        }
 					}
 				}
 			}
