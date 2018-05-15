@@ -5,7 +5,6 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import pt.ulisboa.tecnico.cmu.communication.command.Command;
@@ -190,26 +189,12 @@ public class Server {
 		for (User user: users) {
 			if(user.getUserID().equals(userID)){
 				int score = Math.round(user.getScore());
-				System.out.println("SCORE: " + score + " SCORE TO ADD: " + scoreToAdd);
 				user.setScore(score + scoreToAdd);
 				for (Quiz quiz: quizzes) {
 					if (quiz.getMonumentName().equals(quizName)){
 						Map<String, Integer> userScore = quiz.getUserScore();
-						System.out.println("È NULL " + userScore.containsKey(userID));
-						//este if nao é preciso porque cada cliente so pode fazer cada quiz apenas uma vez
-                        //logo nunca vai conter a key e o servidor apenas tem de meter o resultado do cliente no quiz uma vez
-                        //nunca vai precisar de fazer update dentro do quiz, apenas ao score total do cliente. ou seja basta o codigo dentro do else
-						if (userScore.containsKey(userID)) {
-							System.out.println("ANTES " + userScore.get(userID));
-							userScore.computeIfPresent(userID, (k, v) -> v + scoreToAdd);
-							System.out.println("DEPOIS " + userScore.get(userID));
-							quiz.setUserScore(userScore);
-						}
-						else {
-							userScore.put(userID, scoreToAdd);
-                            quiz.setUserScore(userScore);
-                            System.out.println("DEPOIS222 " + userScore.get(userID) + "   --- " + quiz.getUserScore().get(userID));
-                        }
+                        userScore.put(userID, scoreToAdd);
+                        quiz.setUserScore(userScore);
 					}
 				}
 			}
@@ -222,15 +207,12 @@ public class Server {
 	}
 
 	public static void updateSessionID(String userID, SessionID sessionID) {
-		System.out.println("time  " + sessionID.getGeneratedTime() + " sessID " + sessionID.getSessionID());
 		sessionIDs.put(userID, sessionID);
 		System.out.println(sessionIDs.get(userID).getGeneratedTime());
 	}
 
 	public static void removeSession(String userID) {
-		System.out.println("TAMANHO ANTES " + sessionIDs.size());
 		sessionIDs.remove(userID);
-		System.out.println("TAMANHO DEPOIS 	" + sessionIDs.size());
 	}
 }
 

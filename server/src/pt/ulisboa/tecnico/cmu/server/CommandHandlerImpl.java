@@ -117,7 +117,6 @@ public class CommandHandlerImpl implements CommandHandler {
                     }
                     cnt++;
                 }
-                System.out.println("Score " + score);
                 //compare the get quiz time and the current time and update the score accordingly
                 float diff = calculateQuizTime(quiz, sqc);
                 Server.updateUserScore(sqc.getUserID(), Math.round(score*1000/diff), sqc.getQuizName());
@@ -145,7 +144,6 @@ public class CommandHandlerImpl implements CommandHandler {
             SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
             //generate a random number
             String sessionID = Integer.toString(secureRandom.nextInt());
-            System.out.println("SESSION ID: " + sessionID);
             if (notUsedSessionID(sessionID, userID)){
                 Server.updateSessionID(userID, new SessionID(sessionID, new Date()));
                 return sessionID;
@@ -166,18 +164,12 @@ public class CommandHandlerImpl implements CommandHandler {
 
     private boolean validateSessionID(String sessionID, String userID) {
         if (Server.getSessionID().containsKey(userID)){
-            System.out.println("tem o user");
             SessionID session = Server.getSessionID().get(userID);
             if (session.getSessionID().equals(sessionID)){
-                System.out.println("mesmo session id");
-                //Date last = session.getGeneratedTime();
-                //Date now = new Date();
-                //long diff = Math.abs(now.getTime() - last.getTime());
                 long diff = subtractTimes(session.getGeneratedTime(), new Date());
                 System.out.println(diff);
                 // 300000 miliseconds equals 5 minutes of a session
                 if (diff < 300000) {
-                    //session.setGeneratedTime(now);
                     session.setGeneratedTime(new Date());
                     return true;
                 }
@@ -193,20 +185,16 @@ public class CommandHandlerImpl implements CommandHandler {
     private void initializeClientTimer(Quiz quiz, GetQuizCommand gqc) {
         Map<String, Date> quizTime = quiz.getUserTime();
         quizTime.put(gqc.getUserID(), new Date());
-        System.out.println("user: " + gqc.getUserID() + " start time: " + new Date());
         quiz.setUserTime(quizTime);
     }
 
     private long subtractTimes(Date start, Date end) {
-        System.out.println("start: " + start);
-        System.out.println("end: " + end);
         return Math.abs(end.getTime() - start.getTime());
     }
 
     private float calculateQuizTime(Quiz quiz, SubmitQuizCommand sqc) {
         Map<String, Date> userTime = quiz.getUserTime();
         long diff = subtractTimes(userTime.get(sqc.getUserID()), new Date());
-        System.out.println("diff: " + convertToSeconds(diff));
         return convertToSeconds(diff);
     }
 
