@@ -22,8 +22,7 @@ public class SealedMessage {
     public SealedMessage(Cipher cipher, Serializable object) {
         try{
             this.sealedObject = new SealedObject(object, cipher);
-            this.digest = SecurityManager.sign("PrivateKey",
-                    SerializationUtils.serializeObject(object));
+            this.digest = SecurityManager.hashSHA256(SerializationUtils.serializeObject(object));
 
         }catch (IOException | IllegalBlockSizeException e){
             e.printStackTrace();

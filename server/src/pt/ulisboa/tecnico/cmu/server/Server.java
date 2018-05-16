@@ -1,20 +1,24 @@
 package pt.ulisboa.tecnico.cmu.server;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.util.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 
 import pt.ulisboa.tecnico.cmu.communication.command.Command;
-import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
+import pt.ulisboa.tecnico.cmu.communication.sealed.SealedMessage;
 import pt.ulisboa.tecnico.cmu.data.Question;
+import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.data.User;
+import pt.ulisboa.tecnico.cmu.security.SecurityManager;
 
-import static java.util.stream.Collectors.*;
-import static java.util.Map.Entry.*;
+import static java.util.stream.Collectors.toMap;
 
 public class Server {
 
@@ -23,7 +27,6 @@ public class Server {
 	//M2 - Jeronimos Monastery
 	//M3 - Monument of the Discoveries
 	//M4 - Sao Jorge Castle
-
 
 	private static final int PORT = 9090;
 
@@ -43,6 +46,7 @@ public class Server {
 		initializeM3();
 		initializeM4();
 		initializeTickets();
+		SecurityManager.generateKeyPair();
 
 
 		CommandHandlerImpl chi = new CommandHandlerImpl();
@@ -64,20 +68,61 @@ public class Server {
 				client = socket.accept();
 
 				ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
-				Command cmd =  (Command) ois.readObject();
+				SealedMessage sealedMessage =  (SealedMessage) ois.readObject();
+
+				//Test integrity
+				if(!SecurityManager.verifyHash(sealedMessage.getDigest(), sealedMessage.getSealedObject())){
+					throw new SecurityException("Integrity violated.");
+				}
+				//Decipher command received
+				Command cmd = decipherCommand(sealedMessage);
+
 				Response rsp = cmd.handle(chi);
 
+				//Cipher response
+				sealedMessage = cipherResponse(rsp);
+
 				ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
-				oos.writeObject(rsp);
+				oos.writeObject(sealedMessage);
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
 				if (client != null) {
 					try { client.close(); }
-					catch (Exception e) {}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
+		}
+	}
+
+	private static SealedMessage cipherResponse(Response response){
+
+		if(SecurityManager.getSessionKey() == null){
+			return new SealedMessage(SecurityManager.getCipher(SecurityManager.getTicketKey(),
+					Cipher.ENCRYPT_MODE, "AES/CBC/PKCS7Padding"), response);
+		}else{
+			return new SealedMessage(SecurityManager.getCipher(SecurityManager.getSessionKey(),
+					Cipher.ENCRYPT_MODE, "AES/CBC/PKCS7Padding"), response);
+		}
+	}
+
+	private static Command decipherCommand(SealedMessage message){
+		try{
+
+			if(SecurityManager.getSessionKey() == null){
+				return (Command) message.getSealedObject().getObject(SecurityManager.getCipher(SecurityManager.getKp().getPrivate(),
+						Cipher.DECRYPT_MODE, "RSA/ECB/PKCS1Padding"));
+
+			}else{
+				return (Command) message.getSealedObject().getObject(SecurityManager.getCipher(SecurityManager.getSessionKey(),
+						Cipher.DECRYPT_MODE, "AES/CBC/PKCS7Padding"));
+
+			}
+		} catch (IOException | ClassNotFoundException | IllegalBlockSizeException | BadPaddingException e) {
+			throw new SecurityException("Error deciphering message");
 		}
 	}
 
