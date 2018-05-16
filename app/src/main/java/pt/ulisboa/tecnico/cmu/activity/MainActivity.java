@@ -191,7 +191,8 @@ public class MainActivity extends GeneralActivity
             GetQuizResponse getQuizResponse = (GetQuizResponse) response;
             if(getQuizResponse.getQuiz() != null) {
                 dbquiz = new UserQuizDBHandler(this);
-                dbquiz.insertNameandMonumentName(userID, getQuizResponse.getQuiz().getMonumentName());
+                dbquiz.insertNameandMonumentName(userID, getQuizResponse.getQuiz().getMonumentName(),
+                        getQuizResponse.getQuiz().getQuestions());
                 startQuizActivity(getQuizResponse.getQuiz());
             }
             else {

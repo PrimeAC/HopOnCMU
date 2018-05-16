@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.List;
+
+import pt.ulisboa.tecnico.cmu.data.Question;
+
 public class UserQuizDBHandler extends SQLiteOpenHelper{
 
     public static final String DATABASE_NAME = "UsersQuiz.db";
@@ -33,10 +37,17 @@ public class UserQuizDBHandler extends SQLiteOpenHelper{
         onCreate(sqLiteDatabase);
     }
 
-    public void insertNameandMonumentName(String userName, String monumentName){
+    public void insertNameandMonumentName(String userName, String monumentName, List<Question> questions){
         this.userName = userName;
         this.monumentName = monumentName;
         SQLiteDatabase db = this.getWritableDatabase();
+        int i = 1;
+        if(getQuestionAnswerByUserAndQuiz(userName, monumentName, 1) == null){
+            for(Question question : questions){
+                db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN QUESTION_" + i + " TEXT");
+                i++;
+            }
+        }
         ContentValues values = new ContentValues();
         values.put(USER_NAME, userName);
         values.put(QUIZ_NAME, monumentName);
@@ -45,7 +56,6 @@ public class UserQuizDBHandler extends SQLiteOpenHelper{
 
     public void insertAnswers(int numberOfQuestion, String answer){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN QUESTION_" + numberOfQuestion + " TEXT");
         ContentValues values = new ContentValues();
         values.put("QUESTION_" + numberOfQuestion, answer);
         db.update(TABLE_NAME, values, USER_NAME + " = ? AND " + QUIZ_NAME + " = ? ",
