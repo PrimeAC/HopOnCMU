@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmu.server;
 
+
 import pt.ulisboa.tecnico.cmu.communication.command.*;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.data.SessionID;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Date;
 
 import java.util.logging.Logger;
@@ -32,6 +32,7 @@ public class CommandHandlerImpl implements CommandHandler {
     @Override
     public Response handle(TicketCommand tc) {
         LOGGER.info("Bilhete recebido " + tc.getTicketCode());
+      	SecurityManager.generateTicketKey(tc.getTicketCode().getBytes());
         if (Server.validTicket(tc.getTicketCode())) {
             for (User user : Server.getUsers()) {
                 if (user.getTicketCode().equals(tc.getTicketCode())) {
@@ -55,6 +56,7 @@ public class CommandHandlerImpl implements CommandHandler {
     @Override
     public Response handle(SignUpCommand suc) {
         LOGGER.info("Bilhete recebido " + suc.getTicketCode() + " user: " + suc.getUserID());
+        SecurityManager.generateTicketKey(suc.getTicketCode().getBytes());
         for (User user : Server.getUsers()) {
             if (user.getUserID().equals(suc.getUserID())) {
                 //ticket userID already used

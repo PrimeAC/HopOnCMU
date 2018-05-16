@@ -25,6 +25,8 @@ import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.command.TicketCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.TicketResponse;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
+import pt.ulisboa.tecnico.cmu.security.SecurityManager;
+import pt.ulisboa.tecnico.cmu.util.SerializationUtils;
 
 /**
  * A login screen that offers login via ticket code.
@@ -106,6 +108,9 @@ public class ValidateActivity extends GeneralActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+
+            //Add ticketKey to keystore
+            SecurityManager.importSecretKey(SerializationUtils.serializeObject(ticketCode),"TicketKey");
             new ClientSocket(this, new TicketCommand(ticketCode)).execute();
         }
     }
@@ -157,7 +162,9 @@ public class ValidateActivity extends GeneralActivity {
         TicketResponse ticketResponse = (TicketResponse) response;
         switch (ticketResponse.getStatus()) {
             case "OK": {
-                //TODO: save session id in the client database
+                //Add sessionkey to keystore
+                SecurityManager.importSecretKey(SerializationUtils.serializeObject(response.getSessionID()),
+                    "SessionKey");
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("userID", ticketResponse.getUserID());
                 intent.putExtra("sessionID", ticketResponse.getSessionID());
@@ -168,6 +175,8 @@ public class ValidateActivity extends GeneralActivity {
                 break;
             }
             case "NU": {
+                //Delete ticketKey from keystore
+                SecurityManager.clearAlias("TicketKey");
                 Intent intent = new Intent(this, SignUpActivity.class);
                 intent.putExtra("ticketCode", ticketCode);
                 this.startActivityForResult(intent, REQUEST_EXIT);
