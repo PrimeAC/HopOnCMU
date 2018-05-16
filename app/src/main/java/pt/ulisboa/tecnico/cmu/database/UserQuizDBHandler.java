@@ -42,16 +42,19 @@ public class UserQuizDBHandler extends SQLiteOpenHelper{
         this.monumentName = monumentName;
         SQLiteDatabase db = this.getWritableDatabase();
         int i = 1;
-        if(getQuestionAnswerByUserAndQuiz(userName, monumentName, 1) == null){
+        try {
             for(Question question : questions){
                 db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN QUESTION_" + i + " TEXT");
                 i++;
             }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            ContentValues values = new ContentValues();
+            values.put(USER_NAME, userName);
+            values.put(QUIZ_NAME, monumentName);
+            db.insert(TABLE_NAME, null, values);
         }
-        ContentValues values = new ContentValues();
-        values.put(USER_NAME, userName);
-        values.put(QUIZ_NAME, monumentName);
-        db.insert(TABLE_NAME, null, values);
     }
 
     public void insertAnswers(int numberOfQuestion, String answer){
@@ -85,14 +88,13 @@ public class UserQuizDBHandler extends SQLiteOpenHelper{
 
     public String getQuestionAnswerByUserAndQuiz(String userName, String monumentName, int numberOfQuestion){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, new String[]{"QUESTION_"+numberOfQuestion},
+        Cursor cursor = db.query(TABLE_NAME, new String[]{"QUESTION_" + numberOfQuestion},
                 USER_NAME + " = ? AND " + QUIZ_NAME + " = ?", new String[]{userName, monumentName},
                 null, null, null, null);
-        if(cursor.getCount() == 0)
+        if (cursor.getCount() == 0)
             return null;
-        if(cursor != null)
+        if (cursor != null)
             cursor.moveToFirst();
-
         return cursor.getString(0);
     }
 }
