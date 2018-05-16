@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.List;
+
+import pt.ulisboa.tecnico.cmu.data.Question;
+
 public class UserQuizDBHandler extends SQLiteOpenHelper{
 
     public static final String DATABASE_NAME = "UsersQuiz.db";
@@ -33,19 +37,28 @@ public class UserQuizDBHandler extends SQLiteOpenHelper{
         onCreate(sqLiteDatabase);
     }
 
-    public void insertNameandMonumentName(String userName, String monumentName){
+    public void insertNameandMonumentName(String userName, String monumentName, List<Question> questions){
         this.userName = userName;
         this.monumentName = monumentName;
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(USER_NAME, userName);
-        values.put(QUIZ_NAME, monumentName);
-        db.insert(TABLE_NAME, null, values);
+        int i = 1;
+        try {
+            for(Question question : questions){
+                db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN QUESTION_" + i + " TEXT");
+                i++;
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            ContentValues values = new ContentValues();
+            values.put(USER_NAME, userName);
+            values.put(QUIZ_NAME, monumentName);
+            db.insert(TABLE_NAME, null, values);
+        }
     }
 
     public void insertAnswers(int numberOfQuestion, String answer){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN QUESTION_" + numberOfQuestion + " TEXT");
         ContentValues values = new ContentValues();
         values.put("QUESTION_" + numberOfQuestion, answer);
         db.update(TABLE_NAME, values, USER_NAME + " = ? AND " + QUIZ_NAME + " = ? ",
@@ -75,14 +88,13 @@ public class UserQuizDBHandler extends SQLiteOpenHelper{
 
     public String getQuestionAnswerByUserAndQuiz(String userName, String monumentName, int numberOfQuestion){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, new String[]{"QUESTION_"+numberOfQuestion},
+        Cursor cursor = db.query(TABLE_NAME, new String[]{"QUESTION_" + numberOfQuestion},
                 USER_NAME + " = ? AND " + QUIZ_NAME + " = ?", new String[]{userName, monumentName},
                 null, null, null, null);
-        if(cursor.getCount() == 0)
+        if (cursor.getCount() == 0)
             return null;
-        if(cursor != null)
+        if (cursor != null)
             cursor.moveToFirst();
-
         return cursor.getString(0);
     }
 }

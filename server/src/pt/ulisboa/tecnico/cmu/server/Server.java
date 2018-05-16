@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.sealed.SealedMessage;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
+import pt.ulisboa.tecnico.cmu.data.SessionID;
 import pt.ulisboa.tecnico.cmu.data.User;
 import pt.ulisboa.tecnico.cmu.security.SecurityManager;
 
@@ -38,6 +39,9 @@ public class Server {
 
 	//keeps a list of valid codes
 	private static List<String> tickets = new ArrayList<>();
+
+	//keeps a map of userID: sessionID
+	private static Map<String, SessionID> sessionIDs = new HashMap<>();
 
 
 	public static void main(String[] args) throws Exception {
@@ -217,10 +221,10 @@ public class Server {
 		return sortedRanking;
 	}
 
-	public static List<Question> getQuiz(String quizName) {
+	public static Quiz getQuiz(String quizName) {
 		for (Quiz quiz: quizzes) {
 			if(quizName.equals(quiz.getMonumentName())){
-				return quiz.getQuestions();
+				return quiz;
 			}
 		}
 		return null;
@@ -229,28 +233,31 @@ public class Server {
 	public static void updateUserScore(String userID, int scoreToAdd, String quizName) {
 		for (User user: users) {
 			if(user.getUserID().equals(userID)){
-				int score = user.getScore();
-				System.out.println("SCORE: " + score + " SCORE TO ADD: " + scoreToAdd);
+				int score = Math.round(user.getScore());
 				user.setScore(score + scoreToAdd);
 				for (Quiz quiz: quizzes) {
 					if (quiz.getMonumentName().equals(quizName)){
-						Map<User, Integer> userAnswers = quiz.getUserAnswers();
-						if (userAnswers.get(user) != null) {
-							System.out.println("ANTES " + userAnswers.get(user));
-							userAnswers.computeIfPresent(user, (k, v) -> v + scoreToAdd);
-							System.out.println("DEPOIS " + userAnswers.get(user));
-							quiz.setUserAnswers(userAnswers);
-						}
-						else {
-
-							userAnswers.put(user, scoreToAdd);
-							System.out.println("DEPOIS222 " + userAnswers.get(user));
-						}
+						Map<String, Integer> userScore = quiz.getUserScore();
+                        userScore.put(userID, scoreToAdd);
+                        quiz.setUserScore(userScore);
 					}
 				}
 			}
 		}
 	}
 
+
+	public static Map<String, SessionID> getSessionID() {
+		return sessionIDs;
+	}
+
+	public static void updateSessionID(String userID, SessionID sessionID) {
+		sessionIDs.put(userID, sessionID);
+		System.out.println(sessionIDs.get(userID).getGeneratedTime());
+	}
+
+	public static void removeSession(String userID) {
+		sessionIDs.remove(userID);
+	}
 }
 

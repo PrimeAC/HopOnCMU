@@ -25,8 +25,11 @@ import pt.ulisboa.tecnico.cmu.communication.response.GetQuizResponse;
 import pt.ulisboa.tecnico.cmu.communication.response.GetRankingResponse;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
+import pt.ulisboa.tecnico.cmu.data.Quiz;
+
 import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
 import pt.ulisboa.tecnico.cmu.database.UsersScoreDBHandler;
+
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
@@ -44,6 +47,7 @@ public class MainActivity extends GeneralActivity
 
     private boolean rankingPressed = false;
     private String userID;
+    private String sessionID;
     private int REQUEST_EXIT = 0;
     private UsersScoreDBHandler dbscore;
     private UserQuizDBHandler dbquiz;
@@ -54,8 +58,6 @@ public class MainActivity extends GeneralActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        new ClientSocket(this, new GetRankingCommand()).execute();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -77,12 +79,14 @@ public class MainActivity extends GeneralActivity
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            String data = extras.getString("userID");
+            userID = extras.getString("userID");
+            sessionID = extras.getString("sessionID");
             View header = navigationView.getHeaderView(0);
-            ((TextView) header.findViewById(R.id.userID)).setText(data);
-            userID = ((TextView) header.findViewById(R.id.userID)).getText().toString();
+            ((TextView) header.findViewById(R.id.userID)).setText(userID);
+            Log.i("##77777777##", "--------------------- " + sessionID);
         }
 
+        new ClientSocket(this, new GetRankingCommand(sessionID, userID)).execute();
 
         //Initializing Monument fragment
         // Check that the activity is using the layout version with
@@ -149,27 +153,18 @@ public class MainActivity extends GeneralActivity
 
         if (id == R.id.nav_monuments) {
             rankingPressed = false;
-            MonumentsFragment newFragment = new MonumentsFragment();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, newFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            startMonumentsFragment();
         } else if (id == R.id.nav_ranking) {
             if(!rankingPressed){
-                new ClientSocket(this, new GetRankingCommand()).execute();
+                Log.i("45674", "112222222222 **************************");
+                new ClientSocket(this, new GetRankingCommand(sessionID, userID)).execute();
             }
             rankingPressed = true;
-            RankingFragment newFragment = new RankingFragment();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, newFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            startRankingFragment();
         } else if (id == R.id.nav_logout) {
             rankingPressed = false;
             MonumentsListContent.deleteMonuments();
-            Intent intent = new Intent(this, ValidateActivity.class);
-            startActivity(intent);
-            finish();
+            startValidateActivity();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -182,20 +177,28 @@ public class MainActivity extends GeneralActivity
         if (response instanceof GetRankingResponse) {
             RankingListContent.deleteRanking();
             GetRankingResponse getRankingResponse = (GetRankingResponse) response;
-            RankingListContent.updateRanking(getRankingResponse.getRanking());
-            dbscore = new UsersScoreDBHandler(this);
-            dbscore.insertScore(userID, ((GetRankingResponse) response).getRanking().get(userID));
+            if (getRankingResponse.getRanking() != null){
+                RankingListContent.updateRanking(getRankingResponse.getRanking());
+                dbscore = new UsersScoreDBHandler(this);
+                dbscore.insertScore(userID, ((GetRankingResponse) response).getRanking().get(userID));
+            }
+            else {
+                //means that session id expired
+                startValidateActivity();
+            }
         }
         if (response instanceof GetQuizResponse) {
             GetQuizResponse getQuizResponse = (GetQuizResponse) response;
             if(getQuizResponse.getQuiz() != null) {
                 dbquiz = new UserQuizDBHandler(this);
-                dbquiz.insertNameandMonumentName(userID, getQuizResponse.getQuiz().getMonumentName());
-                Intent intent = new Intent(this, QuizActivity.class);
-                intent.putExtra("quiz", getQuizResponse.getQuiz());
-                intent.putExtra("userID", userID);
-                intent.putExtra("quizName", getQuizResponse.getQuiz().getMonumentName());
-                this.startActivityForResult(intent, REQUEST_EXIT);
+                dbquiz.insertNameandMonumentName(userID, getQuizResponse.getQuiz().getMonumentName(),
+                        getQuizResponse.getQuiz().getQuestions());
+                startQuizActivity(getQuizResponse.getQuiz());
+            }
+            else {
+                //means that session id expired
+                MonumentsListContent.deleteMonuments();
+                startValidateActivity();
             }
         }
     }
@@ -204,7 +207,7 @@ public class MainActivity extends GeneralActivity
     public void onListFragmentInteraction(MonumentItem item) {
         if(!item.answered){
             //item.answered = true;
-            new ClientSocket(this, new GetQuizCommand(item.content)).execute();
+            new ClientSocket(this, new GetQuizCommand(item.content, sessionID, userID)).execute();
         }
         else {
             //TODO: implement the answered quiz to display to user
@@ -231,10 +234,37 @@ public class MainActivity extends GeneralActivity
                     }
                 }
             }
-            else {
-                Log.i("123", "-----------------------------------*********************");
-            }
         }
     }
 
+    private void startValidateActivity() {
+        Intent intent = new Intent(this, ValidateActivity.class);
+        this.startActivity(intent);
+        finish();
+    }
+
+    private void startQuizActivity(Quiz quiz) {
+        Intent intent = new Intent(this, QuizActivity.class);
+        intent.putExtra("quiz", quiz);
+        intent.putExtra("userID", userID);
+        intent.putExtra("quizName", quiz.getMonumentName());
+        intent.putExtra("sessionID", sessionID);
+        this.startActivityForResult(intent, REQUEST_EXIT);
+    }
+
+    private void startRankingFragment() {
+        RankingFragment newFragment = new RankingFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private void startMonumentsFragment() {
+        MonumentsFragment newFragment = new MonumentsFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 }

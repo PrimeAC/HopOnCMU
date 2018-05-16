@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.cmu.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,13 +11,15 @@ public class Quiz implements Serializable{
     private String monumentID;
     private String monumentName;
     private List<Question> questions;
-    private Map<User, Integer> userAnswers;
+    private Map<String, Integer> userScore;  //keeps a map of userID:score for the quiz
+    private Map<String, Date> userTime;  //keeps a map of userID:time spent for the quiz
 
     public Quiz(String monumentID, String monumentName, List<Question> questions){
         this.monumentID = monumentID;
         this.monumentName = monumentName;
         this.questions = questions;
-        this.userAnswers = new HashMap<>();
+        this.userScore = new HashMap<>();
+        this.userTime = new HashMap<>();
     }
 
     public String getMonumentID() {
@@ -44,12 +46,19 @@ public class Quiz implements Serializable{
         this.questions = questions;
     }
 
-    public Map<User, Integer> getUserAnswers() {
-        return userAnswers;
+    public Map<String, Integer> getUserScore() {
+        return userScore;
     }
 
-    public void setUserAnswers(Map<User, Integer> userAnswers) {
-        this.userAnswers = userAnswers;
+    public void setUserScore(Map<String, Integer> userScore) {
+        this.userScore = userScore;
     }
 
+    public Map<String, Date> getUserTime() {
+        return userTime;
+    }
+
+    public void setUserTime(Map<String, Date> userTime) {
+        this.userTime = userTime;
+    }
 }
