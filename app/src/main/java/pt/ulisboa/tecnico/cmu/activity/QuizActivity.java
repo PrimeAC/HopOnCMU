@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmu.activity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,9 +19,11 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
@@ -30,6 +33,7 @@ import pt.ulisboa.tecnico.cmu.communication.response.SubmitQuizResponse;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
+import pt.ulisboa.tecnico.cmu.termite.SimWifiP2pBroadcastReceiver;
 
 
 public class QuizActivity extends GeneralActivity {
@@ -247,11 +251,12 @@ public class QuizActivity extends GeneralActivity {
 
     private void sendAnswer(String userID, String answer, String isRight) {
         //tenho de obter os que estao no meu grupo e meter o ip na task
-
-        new SendCommTask().executeOnExecutor(
+        System.out.println("grupo --------- " + peersInGroup);
+        for (String ip : peersInGroup) {
+            new SendCommTask().executeOnExecutor(
                     AsyncTask.THREAD_POOL_EXECUTOR,
-                    new String[] {"192.168.0.2", userID + " answered " + answer, isRight});
-
+                    new String[]{ip, userID + " answered " + answer, isRight});
+        }
     }
 
     /*
