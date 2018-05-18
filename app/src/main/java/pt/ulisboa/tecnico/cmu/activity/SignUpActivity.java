@@ -150,13 +150,6 @@ public class SignUpActivity extends GeneralActivity {
         }
     }
 
-    /*@Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, ValidateActivity.class);
-        startActivity(intent);
-        finish();
-    }*/
-
     @Override
     public void updateInterface(Response response) {
         showProgress(false);

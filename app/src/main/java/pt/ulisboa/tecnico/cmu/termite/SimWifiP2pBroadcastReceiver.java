@@ -56,6 +56,7 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
         } else if (SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION.equals(action)) {
 
+            mManager.requestGroupInfo(mChannel, mActivity);
             SimWifiP2pInfo ginfo = (SimWifiP2pInfo) intent.getSerializableExtra(
                     SimWifiP2pBroadcast.EXTRA_GROUP_INFO);
             ginfo.print();

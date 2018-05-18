@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.cmu.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -9,12 +9,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.SubmitQuizCommand;
@@ -23,8 +30,6 @@ import pt.ulisboa.tecnico.cmu.communication.response.SubmitQuizResponse;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
-
-import static android.graphics.Color.GRAY;
 
 
 public class QuizActivity extends GeneralActivity {
@@ -38,6 +43,12 @@ public class QuizActivity extends GeneralActivity {
     private UserQuizDBHandler db;
     private int numberOfRightAnswers;
     private int numberOfWrongAnswers;
+
+    private int otherCliRightAnswers = 0;
+    private int otherCliWrongAnswers = 0;
+
+    private SimWifiP2pSocketServer mSrvSocket = null;
+    private SimWifiP2pSocket mCliSocket = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +66,17 @@ public class QuizActivity extends GeneralActivity {
         drawQuestion(questions, numberOfQuestions);
         db = new UserQuizDBHandler(this);
 
+        // spawn the chat server background task
+        new IncommingCommTask().executeOnExecutor(
+                AsyncTask.THREAD_POOL_EXECUTOR);
+
         Button buttonA = findViewById(R.id.button_A);
         buttonA.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
                 String answer = ((TextView) findViewById(R.id.text_answer_A)).getText().toString();
                 checkAnswer(answer);
+                //sendAnswer(getIntent().getStringExtra("userID"), answer);
                 String option = "A";
                 answers.add(answer);
                 rightAnswer(answer, option);
@@ -76,6 +92,7 @@ public class QuizActivity extends GeneralActivity {
                 // Code here executes on main thread after user presses button
                 String answer = ((TextView) findViewById(R.id.text_answer_B)).getText().toString();
                 checkAnswer(answer);
+                //sendAnswer(getIntent().getStringExtra("userID"), answer);
                 String option = "B";
                 answers.add(answer);
                 rightAnswer(answer, option);
@@ -91,6 +108,7 @@ public class QuizActivity extends GeneralActivity {
                 // Code here executes on main thread after user presses button
                 String answer = ((TextView) findViewById(R.id.text_answer_C)).getText().toString();
                 checkAnswer(answer);
+                //sendAnswer(getIntent().getStringExtra("userID"), answer);
                 String option = "C";
                 answers.add(answer);
                 rightAnswer(answer, option);
@@ -106,6 +124,7 @@ public class QuizActivity extends GeneralActivity {
                 // Code here executes on main thread after user presses button
                 String answer = ((TextView) findViewById(R.id.text_answer_D)).getText().toString();
                 checkAnswer(answer);
+                //sendAnswer(getIntent().getStringExtra("userID"), answer);
                 String option = "D";
                 answers.add(answer);
                 rightAnswer(answer, option);
@@ -159,14 +178,33 @@ public class QuizActivity extends GeneralActivity {
         }
     }
 
+    private void updateBars(String isRight) {
+        ProgressBar rightProgressBar = (ProgressBar) findViewById(R.id.right_answer_progressbar);
+        ProgressBar wrongProgressBar = (ProgressBar) findViewById(R.id.wrong_answer_progressbar);
+        if (isRight.equals("T")) {
+            otherCliRightAnswers++;
+        }
+        else {
+            otherCliWrongAnswers++;
+        }
+        int total = otherCliRightAnswers + otherCliWrongAnswers;
+        double right = (double) otherCliRightAnswers/total;
+        double wrong = (double) otherCliWrongAnswers/total;
+        setRightProgressBar(right*100, rightProgressBar);
+        setWrongProgressBar(wrong*100, wrongProgressBar);
+    }
+
     private void rightAnswer(String answer, String option) {
         int id = getResources().getIdentifier("button_" + option, "id", getPackageName());
         final Button button = findViewById(id);
+        String isRigth;
         if (answer.equals(solution)) {
             button.setBackground(getResources().getDrawable(R.drawable.button_right));
+            isRigth = "T";
         }
         else {
             button.setBackground(getResources().getDrawable(R.drawable.button_wrong));
+            isRigth = "F";
         }
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -175,6 +213,7 @@ public class QuizActivity extends GeneralActivity {
                 button.setBackground(getResources().getDrawable(R.drawable.button_disabled));
             }
         }, 700);
+        sendAnswer(getIntent().getStringExtra("userID"), answer, isRigth);
     }
 
     @Override
@@ -205,4 +244,84 @@ public class QuizActivity extends GeneralActivity {
     public void onPeersAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList) {
 
     }
+
+    private void sendAnswer(String userID, String answer, String isRight) {
+        //tenho de obter os que estao no meu grupo e meter o ip na task
+
+        new SendCommTask().executeOnExecutor(
+                    AsyncTask.THREAD_POOL_EXECUTOR,
+                    new String[] {"192.168.0.2", userID + " answered " + answer, isRight});
+
+    }
+
+    /*
+	 * Asynctasks implementing message exchange
+	 */
+
+    public class IncommingCommTask extends AsyncTask<Void, String, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            System.out.println( "IncommingCommTask started (" + this.hashCode() + ").");
+
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(
+                        Integer.parseInt(getString(R.string.port)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    try {
+                        BufferedReader sockIn = new BufferedReader(
+                                new InputStreamReader(sock.getInputStream()));
+                        String st = sockIn.readLine();
+                        publishProgress(st);
+                        sock.getOutputStream().write(("\n").getBytes());
+                    } catch (IOException e) {
+                        Log.d("Error reading socket:", e.getMessage());
+                    } finally {
+                        sock.close();
+                    }
+                } catch (IOException e) {
+                    Log.d("Error socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            String value[] = values[0].split("\\|");
+            String toDisplay = value[0];
+            String isRight = value[1];
+            Toast.makeText(getApplicationContext(), toDisplay, Toast.LENGTH_SHORT).show();
+            updateBars(isRight);
+        }
+    }
+
+    public class SendCommTask extends AsyncTask<String, String, Void> {
+
+        @Override
+        protected Void doInBackground(String... msg) {
+            try {
+                mCliSocket = new SimWifiP2pSocket(msg[0],
+                        Integer.parseInt(getString(R.string.port)));
+                mCliSocket.getOutputStream().write((msg[1] + "|" + msg[2] + "\n").getBytes());
+                BufferedReader sockIn = new BufferedReader(
+                        new InputStreamReader(mCliSocket.getInputStream()));
+                sockIn.readLine();
+                mCliSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mCliSocket = null;
+            return null;
+        }
+    }
+
 }
