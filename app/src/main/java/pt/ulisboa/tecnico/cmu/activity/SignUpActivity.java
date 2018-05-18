@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import javax.crypto.SecretKey;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
@@ -149,13 +151,6 @@ public class SignUpActivity extends GeneralActivity {
         }
     }
 
-    /*@Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, ValidateActivity.class);
-        startActivity(intent);
-        finish();
-    }*/
-
     @Override
     public void updateInterface(Response response) {
         showProgress(false);
@@ -183,4 +178,13 @@ public class SignUpActivity extends GeneralActivity {
 
     }
 
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
+
+    }
+
+    @Override
+    public void onPeersAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList) {
+
+    }
 }

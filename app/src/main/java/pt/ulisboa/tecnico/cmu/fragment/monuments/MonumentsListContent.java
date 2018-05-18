@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.cmu.fragment.monuments;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +25,10 @@ public class MonumentsListContent {
         for (int i = 1; i <= monumentsNames.size(); i++) {
             String[] monumentName = monumentsNames.get(i-1).split("\\|");
             if (monumentName[monumentName.length-1].equals("T")){
-                addItem(createDummyItem(i,monumentName[0], true));
+                addItem(createDummyItem(i,monumentName[0], true, monumentName[2]));
             }
             else {
-                addItem(createDummyItem(i,monumentName[0], false));
+                addItem(createDummyItem(i,monumentName[0], false, monumentName[2]));
             }
         }
     }
@@ -45,8 +43,8 @@ public class MonumentsListContent {
         ITEM_MAP.put(item.id, item);
     }
 
-    private static MonumentItem createDummyItem(int position, String content, boolean isAnswered) {
-        return new MonumentItem(String.valueOf(position), content, isAnswered);
+    private static MonumentItem createDummyItem(int position, String content, boolean isAnswered, String monumentID) {
+        return new MonumentItem(String.valueOf(position), content, isAnswered, monumentID);
     }
 
     public static List<MonumentItem> getITEMS(){
@@ -60,11 +58,13 @@ public class MonumentsListContent {
         public final String id;
         public final String content;
         public boolean answered;
+        public final String monumentID;
 
-        public MonumentItem(String id, String content, boolean answered) {
+        public MonumentItem(String id, String content, boolean answered, String monumentID) {
             this.id = id;
             this.content = content;
             this.answered = answered;
+            this.monumentID = monumentID;
         }
 
         public void setAnswered(){

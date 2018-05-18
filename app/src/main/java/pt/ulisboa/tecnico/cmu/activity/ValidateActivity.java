@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import javax.crypto.SecretKey;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.HelloCommand;
@@ -161,7 +163,6 @@ public class ValidateActivity extends GeneralActivity {
 
     @Override
     public void updateInterface(Response response) {
-
         //Check if response is from HELLO message
         if(response instanceof HelloResponse){
             HelloResponse helloResponse = (HelloResponse) response;
@@ -208,5 +209,14 @@ public class ValidateActivity extends GeneralActivity {
         }
     }
 
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
+
+    }
+
+    @Override
+    public void onPeersAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList) {
+
+    }
 }
 

@@ -1,7 +1,16 @@
 package pt.ulisboa.tecnico.cmu.activity;
 
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -11,13 +20,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.GetQuizCommand;
 import pt.ulisboa.tecnico.cmu.communication.command.GetRankingCommand;
@@ -38,6 +57,7 @@ import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent;
 import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent.RankingItem;
 
 import pt.ulisboa.tecnico.cmu.R;
+import pt.ulisboa.tecnico.cmu.termite.SimWifiP2pBroadcastReceiver;
 
 
 public class MainActivity extends GeneralActivity
@@ -52,12 +72,35 @@ public class MainActivity extends GeneralActivity
     private UsersScoreDBHandler dbscore;
     private UserQuizDBHandler dbquiz;
 
+    private SimWifiP2pManager mManager = null;
+    private SimWifiP2pManager.Channel mChannel = null;
+    private Messenger mService = null;
+
+    private SimWifiP2pBroadcastReceiver mReceiver;
+    private List<String> peersInRange = new ArrayList<>();
+    private List<String> peersInGroup = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // initialize the WDSim API
+        SimWifiP2pSocketManager.Init(getApplicationContext());
+
+        // register broadcast receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+        mReceiver = new SimWifiP2pBroadcastReceiver(this);
+        registerReceiver(mReceiver, filter);
+
+        Intent intent = new Intent(getApplicationContext(), SimWifiP2pService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +126,6 @@ public class MainActivity extends GeneralActivity
             sessionID = extras.getString("sessionID");
             View header = navigationView.getHeaderView(0);
             ((TextView) header.findViewById(R.id.userID)).setText(userID);
-            Log.i("##77777777##", "--------------------- " + sessionID);
         }
 
         new ClientSocket(this, new GetRankingCommand(sessionID, userID), userID, null).execute();
@@ -156,8 +198,8 @@ public class MainActivity extends GeneralActivity
             startMonumentsFragment();
         } else if (id == R.id.nav_ranking) {
             if(!rankingPressed){
-                Log.i("45674", "112222222222 **************************");
                 new ClientSocket(this, new GetRankingCommand(sessionID, userID), userID, null).execute();
+
             }
             rankingPressed = true;
             startRankingFragment();
@@ -206,8 +248,12 @@ public class MainActivity extends GeneralActivity
     @Override
     public void onListFragmentInteraction(MonumentItem item) {
         if(!item.answered){
-            //item.answered = true;
-            new ClientSocket(this, new GetQuizCommand(item.content, sessionID, userID), userID, null).execute();
+            if (peersInRange.contains(item.monumentID)){
+                new ClientSocket(this, new GetQuizCommand(item.content, sessionID, userID), userID, null).execute();
+            }
+            else{
+                Toast.makeText(this, "Monument too far.", Toast.LENGTH_SHORT).show();
+            }
         }
         else {
             //TODO: implement the answered quiz to display to user
@@ -272,4 +318,66 @@ public class MainActivity extends GeneralActivity
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = new Messenger(service);
+            mManager = new SimWifiP2pManager(mService);
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+            mReceiver.setService(mManager, mChannel);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mService = null;
+            mManager = null;
+            mChannel = null;
+        }
+    };
+
+    /*
+	 * Listeners associated to Termite
+	 */
+
+    @Override
+    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
+        peersInRange = new ArrayList<>();
+        // compile list of devices in range
+        for (SimWifiP2pDevice device : peers.getDeviceList()) {
+            peersInRange.add(device.deviceName);
+         }
+
+    }
+
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
+                                     SimWifiP2pInfo groupInfo) {
+
+        peersInGroup = new ArrayList<>();
+        // compile list of network members
+        StringBuilder peersStr = new StringBuilder();
+        for (String deviceName : groupInfo.getDevicesInNetwork()) {
+            SimWifiP2pDevice device = devices.getByName(deviceName);
+            String devstr = "" + deviceName + " (" +
+                    ((device == null)?"??":device.getVirtIp()) + ")\n";
+            peersStr.append(devstr);
+            if (device != null){
+                peersInGroup.add(device.getVirtIp());
+            }
+        }
+
+        // display list of network members
+        new AlertDialog.Builder(this)
+                .setTitle("Devices in WiFi Network")
+                .setMessage(peersStr.toString())
+                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
+
 }

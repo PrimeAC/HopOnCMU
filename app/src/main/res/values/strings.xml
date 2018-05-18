@@ -54,4 +54,6 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab_text_1">History</string>
     <string name="tab_text_2">Ranking</string>
+
+    <string name="port">10001</string>
 </resources>

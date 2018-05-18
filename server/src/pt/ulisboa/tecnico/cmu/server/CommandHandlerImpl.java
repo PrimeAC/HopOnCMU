@@ -203,10 +203,10 @@ public class CommandHandlerImpl implements CommandHandler {
         List<String> monumentsNames = new ArrayList<>();
         for (Quiz quiz : Server.getQuizzes()) {
             if(quiz.getUserScore().containsKey(userID)){
-                monumentsNames.add(quiz.getMonumentName() + "|T");
+                monumentsNames.add(quiz.getMonumentName() + "|T|" + quiz.getMonumentID());
             }
             else {
-                monumentsNames.add(quiz.getMonumentName() + "|F");
+                monumentsNames.add(quiz.getMonumentName() + "|F|" + quiz.getMonumentID());
             }
         }
         return monumentsNames;
