@@ -65,13 +65,6 @@ public class MainActivity extends GeneralActivity
     private UsersScoreDBHandler dbscore;
     private UserQuizDBHandler dbquiz;
 
-    private SimWifiP2pManager mManager = null;
-    private SimWifiP2pManager.Channel mChannel = null;
-    private Messenger mService = null;
-
-    private SimWifiP2pBroadcastReceiver mReceiver;
-    private List<String> peersInRange = new ArrayList<>();
-    private List<String> peersInGroup = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -310,65 +303,5 @@ public class MainActivity extends GeneralActivity
         transaction.commit();
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = new Messenger(service);
-            mManager = new SimWifiP2pManager(mService);
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-            mReceiver.setService(mManager, mChannel);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mService = null;
-            mManager = null;
-            mChannel = null;
-        }
-    };
-
-    /*
-	 * Listeners associated to Termite
-	 */
-
-    @Override
-    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
-        peersInRange = new ArrayList<>();
-        // compile list of devices in range
-        for (SimWifiP2pDevice device : peers.getDeviceList()) {
-            peersInRange.add(device.deviceName);
-         }
-
-    }
-
-    @Override
-    public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
-                                     SimWifiP2pInfo groupInfo) {
-
-        peersInGroup = new ArrayList<>();
-        // compile list of network members
-        StringBuilder peersStr = new StringBuilder();
-        for (String deviceName : groupInfo.getDevicesInNetwork()) {
-            SimWifiP2pDevice device = devices.getByName(deviceName);
-            String devstr = "" + deviceName + " (" +
-                    ((device == null)?"??":device.getVirtIp()) + ")\n";
-            peersStr.append(devstr);
-            if (device != null){
-                peersInGroup.add(device.getVirtIp());
-            }
-        }
-
-        // display list of network members
-        new AlertDialog.Builder(this)
-                .setTitle("Devices in WiFi Network")
-                .setMessage(peersStr.toString())
-                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
-    }
 
 }
