@@ -15,7 +15,6 @@ import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent.RankingItem;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link RankingItem} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class MyRankingRecyclerViewAdapter extends RecyclerView.Adapter<MyRankingRecyclerViewAdapter.ViewHolder> {
 

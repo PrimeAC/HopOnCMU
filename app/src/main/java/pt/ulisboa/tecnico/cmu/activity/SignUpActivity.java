@@ -111,7 +111,7 @@ public class SignUpActivity extends GeneralActivity {
     }
 
     private boolean isUsernameValid(String username){
-        //TODO: replace with username verification logic
+        //TODO: Implement your username format logic
         return true;
     }
 

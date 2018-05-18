@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
@@ -19,11 +18,9 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,26 +34,22 @@ import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
+import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.GetQuizCommand;
 import pt.ulisboa.tecnico.cmu.communication.command.GetRankingCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.GetQuizResponse;
 import pt.ulisboa.tecnico.cmu.communication.response.GetRankingResponse;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
-
 import pt.ulisboa.tecnico.cmu.data.Quiz;
-
 import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
 import pt.ulisboa.tecnico.cmu.database.UsersScoreDBHandler;
-
 import pt.ulisboa.tecnico.cmu.fragment.MonumentsFragment;
+import pt.ulisboa.tecnico.cmu.fragment.RankingFragment;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent.MonumentItem;
-import pt.ulisboa.tecnico.cmu.fragment.RankingFragment;
 import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent;
 import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent.RankingItem;
-
-import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.termite.SimWifiP2pBroadcastReceiver;
 
 
@@ -256,8 +249,6 @@ public class MainActivity extends GeneralActivity
             }
         }
         else {
-            //TODO: implement the answered quiz to display to user
-            //TODO: Send username to history activity
             Intent intent = new Intent(this, HistoryActivity.class);
             intent.putExtra("userName", userID);
             intent.putExtra("monumentName", item.content);

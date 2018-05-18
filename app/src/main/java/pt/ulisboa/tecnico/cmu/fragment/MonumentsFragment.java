@@ -34,7 +34,6 @@ public class MonumentsFragment extends Fragment {
     public MonumentsFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static MonumentsFragment newInstance(int columnCount) {
         MonumentsFragment fragment = new MonumentsFragment();

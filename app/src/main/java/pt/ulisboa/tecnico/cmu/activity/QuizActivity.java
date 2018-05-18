@@ -56,8 +56,6 @@ public class QuizActivity extends GeneralActivity {
 
         this.progressBar = (ProgressBar) findViewById(R.id.quizProgressBar);
 
-        //TODO Receive question ans answers from server and apply to view
-
         questionNumber = 1;
         final Quiz quiz = (Quiz) getIntent().getSerializableExtra("quiz");
         final List<Question> questions = quiz.getQuestions();
@@ -170,7 +168,6 @@ public class QuizActivity extends GeneralActivity {
 
     private void checkAnswer(String answer) {
         if(answer.equals(solution)){
-            // TODO: implement the check if a received answer is right and increment the bars in the bottom accordingly
             numberOfRightAnswers++;
         }
         else {

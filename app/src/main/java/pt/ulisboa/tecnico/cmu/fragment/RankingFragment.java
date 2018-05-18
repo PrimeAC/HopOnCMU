@@ -22,9 +22,7 @@ import pt.ulisboa.tecnico.cmu.fragment.ranking.RankingListContent.RankingItem;
  */
 public class RankingFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
@@ -35,7 +33,6 @@ public class RankingFragment extends Fragment {
     public RankingFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static RankingFragment newInstance(int columnCount) {
         RankingFragment fragment = new RankingFragment();
@@ -102,7 +99,6 @@ public class RankingFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onListFragmentInteraction(RankingItem item);
     }
 }
