@@ -121,7 +121,7 @@ public class MainActivity extends GeneralActivity
             ((TextView) header.findViewById(R.id.userID)).setText(userID);
         }
 
-        new ClientSocket(this, new GetRankingCommand(sessionID, userID)).execute();
+        new ClientSocket(this, new GetRankingCommand(sessionID, userID), userID, null).execute();
 
         //Initializing Monument fragment
         // Check that the activity is using the layout version with
@@ -191,7 +191,8 @@ public class MainActivity extends GeneralActivity
             startMonumentsFragment();
         } else if (id == R.id.nav_ranking) {
             if(!rankingPressed){
-                new ClientSocket(this, new GetRankingCommand(sessionID, userID)).execute();
+                new ClientSocket(this, new GetRankingCommand(sessionID, userID), userID, null).execute();
+
             }
             rankingPressed = true;
             startRankingFragment();
@@ -241,7 +242,7 @@ public class MainActivity extends GeneralActivity
     public void onListFragmentInteraction(MonumentItem item) {
         if(!item.answered){
             if (peersInRange.contains(item.monumentID)){
-                new ClientSocket(this, new GetQuizCommand(item.content, sessionID, userID)).execute();
+                new ClientSocket(this, new GetQuizCommand(item.content, sessionID, userID), userID, null).execute();
             }
             else{
                 Toast.makeText(this, "Monument too far.", Toast.LENGTH_SHORT).show();
@@ -249,6 +250,11 @@ public class MainActivity extends GeneralActivity
         }
         else {
             //TODO: implement the answered quiz to display to user
+            //TODO: Send username to history activity
+            Intent intent = new Intent(this, HistoryActivity.class);
+            intent.putExtra("userName", userID);
+            intent.putExtra("monumentName", item.content);
+            this.startActivity(intent);
         }
     }
 

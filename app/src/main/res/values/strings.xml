@@ -41,6 +41,11 @@
     <string name="text_question_example">Your question here?</string>
     <string name="text_answer_example">Your answer here.</string>
 
+    <!-- String related to HistoryActivity -->
+    <string name="marker_question_1">Question 1</string>
+    <string name="marker_question_2">Question 2</string>
+    <string name="marker_question_3">Question 3</string>
+
     <string name="action_settings">Settings</string>
 
     <!-- TODO: Remove or change this placeholder text -->

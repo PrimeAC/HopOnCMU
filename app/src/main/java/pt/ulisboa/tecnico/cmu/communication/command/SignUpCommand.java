@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmu.communication.command;
 
+import javax.crypto.SecretKey;
+
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
 public class SignUpCommand implements Command {
@@ -7,10 +9,12 @@ public class SignUpCommand implements Command {
     private static final long serialVersionUID = -8807331723807741905L;
     private String ticketCode;
     private String userID;
+    private SecretKey randomAESKey;
 
-    public SignUpCommand(String ticketCode, String userID) {
+    public SignUpCommand(String ticketCode, String userID, SecretKey randomAESKey) {
         this.ticketCode = ticketCode;
         this.userID = userID;
+        this.randomAESKey = randomAESKey;
     }
 
     @Override
@@ -24,5 +28,9 @@ public class SignUpCommand implements Command {
 
     public String getUserID() {
         return this.userID;
+    }
+
+    public SecretKey getRandomAESKey() {
+        return randomAESKey;
     }
 }
