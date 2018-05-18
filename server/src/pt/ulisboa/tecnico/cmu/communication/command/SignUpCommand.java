@@ -2,15 +2,20 @@ package pt.ulisboa.tecnico.cmu.communication.command;
 
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 
+import java.security.PublicKey;
+
 public class SignUpCommand implements Command {
 
     private static final long serialVersionUID = -8807331723807741905L;
     private String ticketCode;
     private String userID;
+    private PublicKey clientPubKey;
 
-    public SignUpCommand(String ticketCode, String userID) {
+
+    public SignUpCommand(String ticketCode, String userID, PublicKey clientPubKey) {
         this.ticketCode = ticketCode;
         this.userID = userID;
+        this.clientPubKey = clientPubKey;
     }
 
     @Override
@@ -24,5 +29,9 @@ public class SignUpCommand implements Command {
 
     public String getUserID() {
         return this.userID;
+    }
+
+    public PublicKey getClientPubKey() {
+        return clientPubKey;
     }
 }

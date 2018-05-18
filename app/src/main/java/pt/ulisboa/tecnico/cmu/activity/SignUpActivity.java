@@ -7,23 +7,20 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.response.SignUpResponse;
-import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
 import pt.ulisboa.tecnico.cmu.database.UsersScoreDBHandler;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
-
+import pt.ulisboa.tecnico.cmu.security.SecurityManager;
 
 
 public class SignUpActivity extends GeneralActivity {
@@ -100,7 +97,8 @@ public class SignUpActivity extends GeneralActivity {
             Bundle extras = getIntent().getExtras();
             if(extras != null) {
                 String data = extras.getString("ticketCode");
-                new ClientSocket(this, new SignUpCommand(data, username)).execute();
+                new ClientSocket(this, new SignUpCommand(data, username,
+                        SecurityManager.getPublicKey("KeyPair")), username).execute();
             }
         }
 
@@ -161,7 +159,8 @@ public class SignUpActivity extends GeneralActivity {
         SignUpResponse signUpResponse = (SignUpResponse) response;
         switch (signUpResponse.getStatus()) {
             case "OK":
-                //TODO: save session id in the client database
+                //Save session key on keystore
+                SecurityManager.importSecretKey("SessionKey", signUpResponse.getSessionID().getBytes());
                 dbscore = new UsersScoreDBHandler(this);
                 dbscore.insertName(signUpResponse.getUserID());
                 Intent intent = new Intent(this, MainActivity.class);

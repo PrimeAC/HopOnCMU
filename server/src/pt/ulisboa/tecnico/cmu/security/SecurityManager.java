@@ -1,37 +1,19 @@
 package pt.ulisboa.tecnico.cmu.security;
 
-import pt.ulisboa.tecnico.cmu.util.SerializationUtils;
+import java.io.Serializable;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.security.*;
-import java.util.Arrays;
+
+import pt.ulisboa.tecnico.cmu.util.SerializationUtils;
 
 /**
  * Created by afonsocaetano on 15/05/2018.
  */
 public class SecurityManager {
-	private static KeyPair kp;
-	private static SecretKey ticketKey;
-	private static SecretKey sessionKey;
-
-	public static KeyPair getKp() {
-		return kp;
-	}
-
-	public static SecretKey getTicketKey() {
-		return ticketKey;
-	}
-
-	public static SecretKey getSessionKey() {
-		return sessionKey;
-	}
 
 	public static Cipher getCipher(Key key, int opmode, String transformation){
 		try{
@@ -44,43 +26,20 @@ public class SecurityManager {
 		}
 	}
 
-	public static void generateTicketKey(byte[] ticketCode){
-		ticketKey = new SecretKeySpec(ticketCode, 0, ticketCode.length, "AES");
-
+	public static SecretKey getKeyFromString(String string){
+		return new SecretKeySpec(hashSHA256(string.getBytes()), 0, string.getBytes().length, "AES");
 	}
 
-	public static void generateSessionKey(){
-		try {
-			KeyGenerator kg = KeyGenerator.getInstance("AES");
-			kg.init(128);
-			sessionKey = kg.generateKey();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	//Load keystore into memory
-	public static void generateKeyPair(){
+	public static KeyPair generateKeyPair(){
 
 		try{
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
 			kpg.initialize(2048);
-			kp = kpg.generateKeyPair();
-			exportPublicKey(kp.getPublic());
+			return kpg.generateKeyPair();
 		}catch (NoSuchAlgorithmException e){
 			e.printStackTrace();
+			return null;
 		}
-	}
-
-	private static void exportPublicKey(Key key){
-		try{
-			FileOutputStream out = new FileOutputStream("serverKey.pub");
-			out.write(key.getEncoded());
-			out.close();
-		}catch(IOException e){
-			e.printStackTrace();
-		}
-
 	}
 
 	public static boolean verifyHash(byte[] hash, Serializable object){
