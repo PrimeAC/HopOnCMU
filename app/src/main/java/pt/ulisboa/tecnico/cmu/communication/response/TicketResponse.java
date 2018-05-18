@@ -8,7 +8,7 @@ public class TicketResponse implements Response {
     private String status;
     private String userID;
     private List<String> monumentsNames;
-    String sessionID;
+    private String sessionID;
 
     public TicketResponse(String status, String userID, List<String> monumentsNames, String sessionID) {
         this.status = status;

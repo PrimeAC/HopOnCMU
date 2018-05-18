@@ -1,10 +1,8 @@
 package pt.ulisboa.tecnico.cmu.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -21,8 +19,6 @@ import pt.ulisboa.tecnico.cmu.communication.response.SubmitQuizResponse;
 import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.database.UserQuizDBHandler;
-
-import static android.graphics.Color.GRAY;
 
 
 public class QuizActivity extends GeneralActivity {
@@ -143,7 +139,8 @@ public class QuizActivity extends GeneralActivity {
         }
         else {
             new ClientSocket(this, new SubmitQuizCommand(getIntent().getStringExtra("quizName"),
-                    answers, getIntent().getStringExtra("userID"), getIntent().getStringExtra("sessionID"))).execute();
+                    answers, getIntent().getStringExtra("userID"), getIntent().getStringExtra("sessionID")),
+                    getIntent().getStringExtra("userID"), null).execute();
         }
     }
 

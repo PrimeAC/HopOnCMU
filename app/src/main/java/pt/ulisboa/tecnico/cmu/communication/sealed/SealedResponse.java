@@ -7,22 +7,24 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SealedObject;
 
+import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.security.SecurityManager;
 import pt.ulisboa.tecnico.cmu.util.SerializationUtils;
 
 /**
- * Created by afonsocaetano on 14/05/2018.
+ * Created by afonsocaetano on 18/05/2018.
  */
 
-public class SealedMessage {
-
+public class SealedResponse implements Response {
+    private String userID;
     private byte[] digest;
     private SealedObject sealedObject;
 
-    public SealedMessage(Cipher cipher, Serializable object) {
+    public SealedResponse(String userID, Cipher cipher, Serializable object) {
         try{
+            this.userID = userID;
             this.sealedObject = new SealedObject(object, cipher);
-            this.digest = SecurityManager.hashSHA256(SerializationUtils.serializeObject(object));
+            this.digest = SecurityManager.hashSHA256(SerializationUtils.serializeObject(sealedObject));
 
         }catch (IOException | IllegalBlockSizeException e){
             e.printStackTrace();
@@ -35,5 +37,9 @@ public class SealedMessage {
 
     public SealedObject getSealedObject() {
         return sealedObject;
+    }
+
+    public String getUserID() {
+        return userID;
     }
 }

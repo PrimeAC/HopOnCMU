@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-
-
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,16 +15,17 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import javax.crypto.SecretKey;
 
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
-import pt.ulisboa.tecnico.cmu.communication.response.Response;
-
+import pt.ulisboa.tecnico.cmu.communication.command.HelloCommand;
 import pt.ulisboa.tecnico.cmu.communication.command.TicketCommand;
+import pt.ulisboa.tecnico.cmu.communication.response.HelloResponse;
+import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.response.TicketResponse;
 import pt.ulisboa.tecnico.cmu.fragment.monuments.MonumentsListContent;
 import pt.ulisboa.tecnico.cmu.security.SecurityManager;
-import pt.ulisboa.tecnico.cmu.util.SerializationUtils;
 
 /**
  * A login screen that offers login via ticket code.
@@ -47,8 +46,12 @@ public class ValidateActivity extends GeneralActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_validate);
 
+        //Generate client KeyPair
+        SecurityManager.generateKeyPair();
+        //Send HELLO message to server
+        new ClientSocket(this, new HelloCommand(), null,  null).execute();
 
-        // Set up the login form.
+        // Set up the login form
         mTicketCodeView = (AutoCompleteTextView) findViewById(R.id.input_ticket_code);
 
 
@@ -109,9 +112,9 @@ public class ValidateActivity extends GeneralActivity {
             // perform the user login attempt.
             showProgress(true);
 
-            //Add ticketKey to keystore
-            SecurityManager.importSecretKey(SerializationUtils.serializeObject(ticketCode),"TicketKey");
-            new ClientSocket(this, new TicketCommand(ticketCode)).execute();
+            //Send TICKET message to server
+            SecretKey randomAESKey = SecurityManager.generateRandomAESKey();
+            new ClientSocket(this, new TicketCommand(ticketCode,randomAESKey), null, randomAESKey).execute();
         }
     }
 
@@ -158,34 +161,40 @@ public class ValidateActivity extends GeneralActivity {
 
     @Override
     public void updateInterface(Response response) {
-        showProgress(false);
-        TicketResponse ticketResponse = (TicketResponse) response;
-        switch (ticketResponse.getStatus()) {
-            case "OK": {
-                //Add sessionkey to keystore
-                SecurityManager.importSecretKey(SerializationUtils.serializeObject(response.getSessionID()),
-                    "SessionKey");
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("userID", ticketResponse.getUserID());
-                intent.putExtra("sessionID", ticketResponse.getSessionID());
-                Log.i("####", "--------------------- " + ticketResponse.getSessionID());
-                MonumentsListContent.addMonuments(ticketResponse.getMonumentsNames());
-                this.startActivity(intent);
-                finish();
-                break;
+
+        //Check if response is from HELLO message
+        if(response instanceof HelloResponse){
+            HelloResponse helloResponse = (HelloResponse) response;
+            SecurityManager.serverPubKey = helloResponse.getServerPubKey();
+            Log.i("Server Public Key Size", String.valueOf(SecurityManager.serverPubKey.getEncoded().length));
+        }
+        else {
+            showProgress(false);
+            TicketResponse ticketResponse = (TicketResponse) response;
+            switch (ticketResponse.getStatus()) {
+                case "OK": {
+                    //Add sessionkey
+                    SecurityManager.sessionKey = SecurityManager.getKeyFromString(ticketResponse.getSessionID());
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("userID", ticketResponse.getUserID());
+                    intent.putExtra("sessionID", ticketResponse.getSessionID());
+                    Log.i("####", "--------------------- " + ticketResponse.getSessionID());
+                    MonumentsListContent.addMonuments(ticketResponse.getMonumentsNames());
+                    this.startActivity(intent);
+                    finish();
+                    break;
+                }
+                case "NU": {
+                    Intent intent = new Intent(this, SignUpActivity.class);
+                    intent.putExtra("ticketCode", ticketCode);
+                    this.startActivityForResult(intent, REQUEST_EXIT);
+                    break;
+                }
+                default:
+                    mTicketCodeView.setError(getString(R.string.error_incorrect_ticketCode));
+                    mTicketCodeView.requestFocus();
+                    break;
             }
-            case "NU": {
-                //Delete ticketKey from keystore
-                SecurityManager.clearAlias("TicketKey");
-                Intent intent = new Intent(this, SignUpActivity.class);
-                intent.putExtra("ticketCode", ticketCode);
-                this.startActivityForResult(intent, REQUEST_EXIT);
-                break;
-            }
-            default:
-                mTicketCodeView.setError(getString(R.string.error_incorrect_ticketCode));
-                mTicketCodeView.requestFocus();
-                break;
         }
     }
 

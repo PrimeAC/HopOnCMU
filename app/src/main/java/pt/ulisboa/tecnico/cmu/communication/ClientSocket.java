@@ -3,19 +3,23 @@ package pt.ulisboa.tecnico.cmu.communication;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
 
 import pt.ulisboa.tecnico.cmu.activity.GeneralActivity;
 import pt.ulisboa.tecnico.cmu.communication.command.Command;
+import pt.ulisboa.tecnico.cmu.communication.command.GetQuizCommand;
+import pt.ulisboa.tecnico.cmu.communication.command.GetRankingCommand;
+import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
+import pt.ulisboa.tecnico.cmu.communication.command.SubmitQuizCommand;
+import pt.ulisboa.tecnico.cmu.communication.command.TicketCommand;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
-import pt.ulisboa.tecnico.cmu.communication.sealed.SealedMessage;
+import pt.ulisboa.tecnico.cmu.communication.sealed.SealedCommand;
+import pt.ulisboa.tecnico.cmu.communication.sealed.SealedResponse;
 import pt.ulisboa.tecnico.cmu.security.SecurityManager;
 
 
@@ -23,10 +27,14 @@ public class ClientSocket extends AsyncTask<Void, Void, Response> {
 
     private GeneralActivity generalActivity;
     private Command command;
+    private String userID;
+    private SecretKey randomAESKey;
 
-    public ClientSocket(GeneralActivity generalActivity, Command command) {
+    public ClientSocket(GeneralActivity generalActivity, Command command, String userID, SecretKey randomAESKey) {
         this.generalActivity = generalActivity;
         this.command = command;
+        this.userID = userID;
+        this.randomAESKey = randomAESKey;
     }
 
     @Override
@@ -37,19 +45,49 @@ public class ClientSocket extends AsyncTask<Void, Void, Response> {
             server = new Socket("10.0.2.2", 9090);
 
             ObjectOutputStream oos = new ObjectOutputStream(server.getOutputStream());
-            //Cipher command object
-            SealedMessage sealedMessage = cipherCommand(command);
-            oos.writeObject(sealedMessage);
+            ObjectInputStream ois;
 
-            ObjectInputStream ois = new ObjectInputStream(server.getInputStream());
-            sealedMessage = (SealedMessage) ois.readObject();
+            Log.i("Vou enviar uma mensagem", command.toString());
 
-            //Test integrity
-            if(!SecurityManager.verifyHash(sealedMessage.getDigest(), sealedMessage.getSealedObject())){
-               throw new SecurityException("Integrity violated.");
+            if(command instanceof TicketCommand || command instanceof SignUpCommand){
+                //Send ciphered command
+                SealedCommand sealedCommand = new SealedCommand(userID, SecurityManager
+                        .getKeyCipher(randomAESKey,Cipher.ENCRYPT_MODE,"AES"),command);
+                sealedCommand.setRandomAESKey(SecurityManager
+                        .getKeyCipher(SecurityManager.serverPubKey,Cipher.ENCRYPT_MODE, "RSA/ECB/PKCS1Padding"),randomAESKey);
+                oos.writeObject(sealedCommand);
+
+                //Receive server response
+                ois  = new ObjectInputStream(server.getInputStream());
+                SealedResponse sealedResponse = (SealedResponse) ois.readObject();
+                //Test integrity
+                if(!SecurityManager.verifyHash(sealedResponse.getDigest(), sealedResponse.getSealedObject())){
+                   throw new SecurityException("Integrity violated.");
+                }
+                response = (Response) sealedResponse.getSealedObject()
+                        .getObject(randomAESKey);
             }
-            //Decipher response object
-            response = decipherResponse(sealedMessage);
+            else if(command instanceof GetQuizCommand ||
+                    command instanceof GetRankingCommand ||
+                    command instanceof SubmitQuizCommand){
+                SealedCommand sealedCommand = new SealedCommand(userID, SecurityManager
+                        .getKeyCipher(SecurityManager.sessionKey, Cipher.ENCRYPT_MODE, "AES"), command);
+                oos.writeObject(sealedCommand);
+
+                ois  = new ObjectInputStream(server.getInputStream());
+                SealedResponse sealedResponse = (SealedResponse) ois.readObject();
+                //Test integrity
+                if(!SecurityManager.verifyHash(sealedResponse.getDigest(), sealedResponse.getSealedObject())){
+                    throw new SecurityException("Integrity violated.");
+                }
+                response = (Response) sealedResponse.getSealedObject()
+                        .getObject(SecurityManager.getKeyCipher(SecurityManager.sessionKey, Cipher.DECRYPT_MODE, "AES"));
+            }
+            else{
+                oos.writeObject(command);
+                ois  = new ObjectInputStream(server.getInputStream());
+                response =  (Response) ois.readObject();
+            }
 
             oos.close();
             ois.close();
@@ -70,34 +108,6 @@ public class ClientSocket extends AsyncTask<Void, Void, Response> {
     protected void onPostExecute(Response o) {
         if (o != null) {
             generalActivity.updateInterface(o);
-        }
-    }
-
-    private SealedMessage cipherCommand(Command command){
-
-        if(SecurityManager.keyExists("SessionKey")){
-            return new SealedMessage(SecurityManager.getCipher("SessionKey",
-                    Cipher.ENCRYPT_MODE), command);
-        }else{
-            System.out.println("Working Directory = " +
-                    System.getProperty("user.dir"));
-            return new SealedMessage(SecurityManager.loadPublicKey(""),
-                    command);
-        }
-    }
-
-    private Response decipherResponse(SealedMessage message){
-        try{
-
-            if(SecurityManager.keyExists("SessionKey")){
-                return (Response) message.getSealedObject().getObject(SecurityManager.getCipher("SessionKey", Cipher.DECRYPT_MODE));
-
-            }else{
-                return (Response) message.getSealedObject().getObject(SecurityManager.getCipher("TicketCode", Cipher.DECRYPT_MODE));
-
-            }
-        } catch (IOException | ClassNotFoundException | IllegalBlockSizeException | BadPaddingException e) {
-            throw new SecurityException("Error deciphering message");
         }
     }
 }

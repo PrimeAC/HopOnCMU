@@ -2,20 +2,23 @@ package pt.ulisboa.tecnico.cmu.server;
 
 
 import pt.ulisboa.tecnico.cmu.communication.command.*;
+import pt.ulisboa.tecnico.cmu.communication.response.*;
+import pt.ulisboa.tecnico.cmu.communication.sealed.SealedCommand;
+import pt.ulisboa.tecnico.cmu.communication.sealed.SealedResponse;
+import pt.ulisboa.tecnico.cmu.data.Question;
 import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.data.SessionID;
 import pt.ulisboa.tecnico.cmu.data.User;
-import pt.ulisboa.tecnico.cmu.data.Question;
-import pt.ulisboa.tecnico.cmu.communication.response.*;
+import pt.ulisboa.tecnico.cmu.security.SecurityManager;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Date;
-
+import java.util.*;
 import java.util.logging.Logger;
 
 
@@ -25,14 +28,14 @@ public class CommandHandlerImpl implements CommandHandler {
 
     @Override
     public Response handle(HelloCommand hc) {
-        LOGGER.info("Received: " + hc.getMessage());
-        return new HelloResponse("Hi from Server!");
+        LOGGER.info("Received HELLO command");
+        return new HelloResponse(Server.getServerPublicKey());
     }
 
     @Override
     public Response handle(TicketCommand tc) {
         LOGGER.info("Bilhete recebido " + tc.getTicketCode());
-      	SecurityManager.generateTicketKey(tc.getTicketCode().getBytes());
+        TicketResponse ticketResponse;
         if (Server.validTicket(tc.getTicketCode())) {
             for (User user : Server.getUsers()) {
                 if (user.getTicketCode().equals(tc.getTicketCode())) {
@@ -40,27 +43,41 @@ public class CommandHandlerImpl implements CommandHandler {
                     String sessionID;
                     while (true){
                         sessionID = generateSessionID(user.getUserID());
+
                         if (sessionID != null){
+	                        //Set sessionKey
                             break;
                         }
                     }
-                    return new TicketResponse("OK", user.getUserID(), getMonuments(user.getUserID()), sessionID);
+                    ticketResponse = new TicketResponse("OK",
+                            user.getUserID(), getMonuments(user.getUserID()), sessionID);;
+                    return new SealedResponse(null, SecurityManager.getCipher(tc.getRandomAESKey(),
+                            Cipher.ENCRYPT_MODE, "AES"), ticketResponse);
                 }
             }
             //ticket never used (NU), so need to create an account
-            return new TicketResponse("NU", null, null,  null);
+            ticketResponse = new TicketResponse("NU", null,
+                    null,  null);
+            return new SealedResponse(null, SecurityManager.getCipher(tc.getRandomAESKey(),
+                    Cipher.ENCRYPT_MODE, "AES"), ticketResponse);
         }
-        return new TicketResponse("NOK", null, null, null);
+        ticketResponse = new TicketResponse("NOK", null,
+                null, null);
+
+        return new SealedResponse(null, SecurityManager.getCipher(tc.getRandomAESKey(),
+                Cipher.ENCRYPT_MODE, "AES"), ticketResponse);
     }
 
     @Override
     public Response handle(SignUpCommand suc) {
         LOGGER.info("Bilhete recebido " + suc.getTicketCode() + " user: " + suc.getUserID());
-        SecurityManager.generateTicketKey(suc.getTicketCode().getBytes());
+        SignUpResponse signUpResponse;
         for (User user : Server.getUsers()) {
             if (user.getUserID().equals(suc.getUserID())) {
                 //ticket userID already used
-                return new SignUpResponse("NOK", null, null, null);
+                signUpResponse = new SignUpResponse("NOK", suc.getUserID(), null, null);
+                return new SealedResponse(null, SecurityManager.getCipher(suc.getRandomAESKey(),
+                        Cipher.ENCRYPT_MODE, "AES"), signUpResponse);
             }
         }
         User user = new User(suc.getUserID(), suc.getTicketCode(), 0);
@@ -69,43 +86,61 @@ public class CommandHandlerImpl implements CommandHandler {
         while (true){
             sessionID = generateSessionID(user.getUserID());
             if (sessionID != null){
+	            //Set sessionKey
                 break;
             }
         }
-        return new SignUpResponse("OK", user.getUserID(), getMonuments(user.getUserID()), sessionID);
+        signUpResponse = new SignUpResponse("OK", user.getUserID(), getMonuments(user.getUserID()), sessionID);
+        return new SealedResponse(suc.getUserID(), SecurityManager.getCipher(suc.getRandomAESKey(),
+                Cipher.ENCRYPT_MODE, "AES"), signUpResponse);
     }
 
     @Override
     public Response handle(GetQuizCommand gqc) {
         LOGGER.info("Quiz " + gqc.getMonumentName());
+        GetQuizResponse getQuizResponse;
         if (validateSessionID(gqc.getSessionID(), gqc.getUserID())) {
             for (Quiz quiz : Server.getQuizzes()) {
                 if (quiz.getMonumentName().equals(gqc.getMonumentName())) {
                     //put the current time on the associated client
                     initializeClientTimer(quiz, gqc);
-                    return new GetQuizResponse(quiz);
+	                getQuizResponse = new GetQuizResponse(quiz);
+	                return new SealedResponse(gqc.getUserID(), SecurityManager.getCipher(SecurityManager
+			                .getKeyFromString(Server.getSessionID().get(gqc.getUserID()).getSessionID()),
+			                Cipher.ENCRYPT_MODE,"AES"),getQuizResponse);
                 }
             }
         }
-        return new GetQuizResponse(null);
+	    getQuizResponse = new GetQuizResponse(null);
+	    return new SealedResponse(gqc.getUserID(), SecurityManager.getCipher(SecurityManager
+					    .getKeyFromString(Server.getSessionID().get(gqc.getUserID()).getSessionID()),
+			    Cipher.ENCRYPT_MODE,"AES"),getQuizResponse);
     }
 
     @Override
     public Response handle(GetRankingCommand grc) {
         LOGGER.info("recebi um get ranking " + grc.getSessionID() + " //// " + grc.getUserID());
+	    GetRankingResponse getRankingResponse;
         if (validateSessionID(grc.getSessionID(), grc.getUserID())) {
             Map<String, Integer> unsortRanking = new HashMap<>();
             for (User user : Server.getUsers()) {
                 unsortRanking.put(user.getUserID(), Math.round(user.getScore()));
             }
-            return new GetRankingResponse(Server.sortByScore(unsortRanking));
+	        getRankingResponse = new GetRankingResponse(Server.sortByScore(unsortRanking));
+	        return new SealedResponse(grc.getUserID(), SecurityManager.getCipher(SecurityManager
+					        .getKeyFromString(Server.getSessionID().get(grc.getUserID()).getSessionID()),
+			        Cipher.ENCRYPT_MODE,"AES"),getRankingResponse);
         }
-        return new GetRankingResponse(null);
+	    getRankingResponse = new GetRankingResponse(null);
+	    return new SealedResponse(grc.getUserID(), SecurityManager.getCipher(SecurityManager
+					    .getKeyFromString(Server.getSessionID().get(grc.getUserID()).getSessionID()),
+			    Cipher.ENCRYPT_MODE,"AES"),getRankingResponse);
     }
 
     @Override
     public Response handle(SubmitQuizCommand sqc) {
-        LOGGER.info("Recebi as respostas ao quiz " + sqc.getAnswers().get(0) + sqc.getAnswers().get(1) + sqc.getAnswers().get(2) );
+        LOGGER.info("Recebi as respostas ao quiz " + sqc.getAnswers().get(0) + sqc.getAnswers().get(1) + sqc.getAnswers().get(2));
+        SubmitQuizResponse submitQuizResponse;
         if (validateSessionID(sqc.getSessionID(), sqc.getUserID())) {
             Quiz quiz = Server.getQuiz(sqc.getQuizName());
             List<Question> questions = quiz.getQuestions();
@@ -122,10 +157,46 @@ public class CommandHandlerImpl implements CommandHandler {
                 //compare the get quiz time and the current time and update the score accordingly
                 float diff = calculateQuizTime(quiz, sqc);
                 Server.updateUserScore(sqc.getUserID(), Math.round(score*1000/diff), sqc.getQuizName());
-                return new SubmitQuizResponse("OK");
+                submitQuizResponse = new SubmitQuizResponse("OK");
+	            return new SealedResponse(sqc.getUserID(), SecurityManager.getCipher(SecurityManager
+					            .getKeyFromString(Server.getSessionID().get(sqc.getUserID()).getSessionID()),
+			            Cipher.ENCRYPT_MODE,"AES"),submitQuizResponse);
             }
         }
-        return new SubmitQuizResponse("NOK");
+        submitQuizResponse = new SubmitQuizResponse("NOK");
+	    return new SealedResponse(sqc.getUserID(), SecurityManager.getCipher(SecurityManager
+					    .getKeyFromString(Server.getSessionID().get(sqc.getUserID()).getSessionID()),
+			    Cipher.ENCRYPT_MODE,"AES"),submitQuizResponse);
+    }
+
+    @Override
+    public Response handle(SealedCommand sm) {
+        CommandHandlerImpl cmi = new CommandHandlerImpl();
+        Command cmd;
+        //Test integrity
+        if(!SecurityManager.verifyHash(sm.getDigest(), sm.getSealedObject())){
+            throw new SecurityException("Integrity violated.");
+        }
+        try {
+	        if (sm.getUserID() == null) {
+	        	//Get RandomAESKey
+		        SecretKey randomAESKey = (SecretKey) sm.getRandomAESKey().getObject(SecurityManager.getCipher(Server.getServerPrivateKey(),
+				        Cipher.DECRYPT_MODE, "RSA/ECB/PKCS1Padding"));
+		        //Use Server private key
+		        cmd = (Command) sm.getSealedObject().getObject(SecurityManager.getCipher(randomAESKey,
+				        Cipher.DECRYPT_MODE, "AES"));
+	        } else {
+		        //Use Client session key
+		        SecretKey sessionKey = SecurityManager.getKeyFromString(Server.getSessionID()
+				        .get(sm.getUserID()).getSessionID());
+		        cmd = (Command) sm.getSealedObject().getObject(SecurityManager.getCipher(sessionKey,
+				        Cipher.DECRYPT_MODE, "AES"));
+	        }
+        }catch(IOException | ClassNotFoundException | IllegalBlockSizeException | BadPaddingException e){
+        	e.printStackTrace();
+        	throw new SecurityException("Error unciphering message");
+        }
+        return cmd.handle(cmi);
     }
 
     private List<String> getMonuments(String userID) {

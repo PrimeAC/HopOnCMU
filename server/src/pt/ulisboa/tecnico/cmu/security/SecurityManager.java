@@ -7,8 +7,6 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.security.*;
 import java.util.Arrays;
@@ -17,21 +15,6 @@ import java.util.Arrays;
  * Created by afonsocaetano on 15/05/2018.
  */
 public class SecurityManager {
-	private static KeyPair kp;
-	private static SecretKey ticketKey;
-	private static SecretKey sessionKey;
-
-	public static KeyPair getKp() {
-		return kp;
-	}
-
-	public static SecretKey getTicketKey() {
-		return ticketKey;
-	}
-
-	public static SecretKey getSessionKey() {
-		return sessionKey;
-	}
 
 	public static Cipher getCipher(Key key, int opmode, String transformation){
 		try{
@@ -44,48 +27,50 @@ public class SecurityManager {
 		}
 	}
 
-	public static void generateTicketKey(byte[] ticketCode){
-		ticketKey = new SecretKeySpec(ticketCode, 0, ticketCode.length, "AES");
 
+	public static SecretKey getKeyFromString(String string){
+		byte[] hashmd5 = hashMd5(string.getBytes());
+		return new SecretKeySpec(hashmd5, 0, hashmd5.length, "AES");
 	}
 
-	public static void generateSessionKey(){
+	public static byte[] hashMd5(byte[] content){
+		byte[] result = null;
 		try {
-			KeyGenerator kg = KeyGenerator.getInstance("AES");
-			kg.init(128);
-			sessionKey = kg.generateKey();
-		} catch (Exception e) {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(content);
+			result = md.digest();
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
+		return result;
 	}
 
-	//Load keystore into memory
-	public static void generateKeyPair(){
+	public static KeyPair generateKeyPair(){
 
 		try{
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
 			kpg.initialize(2048);
-			kp = kpg.generateKeyPair();
-			exportPublicKey(kp.getPublic());
+			return kpg.generateKeyPair();
 		}catch (NoSuchAlgorithmException e){
 			e.printStackTrace();
+			return null;
 		}
 	}
 
-	private static void exportPublicKey(Key key){
+	public static SecretKey generateRandomAESKey(){
 		try{
-			FileOutputStream out = new FileOutputStream("serverKey.pub");
-			out.write(key.getEncoded());
-			out.close();
-		}catch(IOException e){
+			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+			keyGen.init(256); // for example
+			return keyGen.generateKey();
+		}catch(NoSuchAlgorithmException e){
 			e.printStackTrace();
+			return null;
 		}
-
 	}
 
 	public static boolean verifyHash(byte[] hash, Serializable object){
 		byte[] content = SerializationUtils.serializeObject(object);
-		return Arrays.equals(hash, content);
+		return Arrays.equals(hash, hashSHA256(content));
 	}
 
 
