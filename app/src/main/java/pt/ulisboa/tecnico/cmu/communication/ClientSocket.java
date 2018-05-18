@@ -47,8 +47,6 @@ public class ClientSocket extends AsyncTask<Void, Void, Response> {
             ObjectOutputStream oos = new ObjectOutputStream(server.getOutputStream());
             ObjectInputStream ois;
 
-            Log.i("Vou enviar uma mensagem", command.toString());
-
             if(command instanceof TicketCommand || command instanceof SignUpCommand){
                 //Send ciphered command
                 SealedCommand sealedCommand = new SealedCommand(userID, SecurityManager

@@ -211,6 +211,11 @@ public class MainActivity extends GeneralActivity
         }
         else {
             //TODO: implement the answered quiz to display to user
+            //TODO: Send username to history activity
+            Intent intent = new Intent(this, HistoryActivity.class);
+            intent.putExtra("userName", userID);
+            intent.putExtra("monumentName", item.content);
+            this.startActivity(intent);
         }
     }
 
