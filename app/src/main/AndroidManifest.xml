@@ -35,13 +35,10 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activity.QuizActivity" />
-        <activity
-            android:name=".activity.HistoryActivity"
-            android:label="@string/title_activity_history"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
 
+        <activity android:name=".activity.HistoryActivity"></activity>
     </application>
 
 </manifest>

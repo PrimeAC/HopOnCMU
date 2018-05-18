@@ -1,15 +1,17 @@
 package pt.ulisboa.tecnico.cmu.communication.response;
 
+import java.security.PublicKey;
+
 public class HelloResponse implements Response {
 
 	private static final long serialVersionUID = 734457624276534179L;
-	private String message;
-	
-	public HelloResponse(String message) {
-		this.message = message;
+	private PublicKey serverPubKey;
+
+	public HelloResponse(PublicKey serverPubKey) {
+		this.serverPubKey = serverPubKey;
 	}
-	
-	public String getMessage() {
-		return this.message;
+
+	public PublicKey getServerPubKey() {
+		return this.serverPubKey;
 	}
 }
