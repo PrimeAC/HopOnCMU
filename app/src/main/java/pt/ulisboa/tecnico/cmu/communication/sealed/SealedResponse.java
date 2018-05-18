@@ -24,7 +24,7 @@ public class SealedResponse implements Response {
         try{
             this.userID = userID;
             this.sealedObject = new SealedObject(object, cipher);
-            this.digest = SecurityManager.hashSHA256(SerializationUtils.serializeObject(object));
+            this.digest = SecurityManager.hashSHA256(SerializationUtils.serializeObject(sealedObject));
 
         }catch (IOException | IllegalBlockSizeException e){
             e.printStackTrace();

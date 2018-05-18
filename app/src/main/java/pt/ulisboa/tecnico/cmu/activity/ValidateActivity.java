@@ -15,6 +15,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import javax.crypto.SecretKey;
+
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.HelloCommand;
@@ -45,7 +47,9 @@ public class ValidateActivity extends GeneralActivity {
         setContentView(R.layout.activity_validate);
 
         //Generate client KeyPair
-        SecurityManager.generateKeyPair("KeyPair");
+        SecurityManager.generateKeyPair();
+        //Send HELLO message to server
+        new ClientSocket(this, new HelloCommand(), null,  null).execute();
 
         // Set up the login form
         mTicketCodeView = (AutoCompleteTextView) findViewById(R.id.input_ticket_code);
@@ -108,12 +112,9 @@ public class ValidateActivity extends GeneralActivity {
             // perform the user login attempt.
             showProgress(true);
 
-            //Send HELLO message to server
-            new ClientSocket(this, new HelloCommand(), null);
-
             //Send TICKET message to server
-            new ClientSocket(this, new TicketCommand(ticketCode,
-                    SecurityManager.getPublicKey("KeyPair")), null).execute();
+            SecretKey randomAESKey = SecurityManager.generateRandomAESKey();
+            new ClientSocket(this, new TicketCommand(ticketCode,randomAESKey), null, randomAESKey).execute();
         }
     }
 
@@ -165,15 +166,15 @@ public class ValidateActivity extends GeneralActivity {
         if(response instanceof HelloResponse){
             HelloResponse helloResponse = (HelloResponse) response;
             SecurityManager.serverPubKey = helloResponse.getServerPubKey();
+            Log.i("Server Public Key Size", String.valueOf(SecurityManager.serverPubKey.getEncoded().length));
         }
         else {
             showProgress(false);
             TicketResponse ticketResponse = (TicketResponse) response;
             switch (ticketResponse.getStatus()) {
                 case "OK": {
-                    //Add sessionkey to keystore
-                    SecurityManager.importSecretKey("SessionKey",
-                            SecurityManager.hashSHA256(ticketResponse.getSessionID().getBytes()));
+                    //Add sessionkey
+                    SecurityManager.sessionKey = SecurityManager.getKeyFromString(ticketResponse.getSessionID());
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("userID", ticketResponse.getUserID());
                     intent.putExtra("sessionID", ticketResponse.getSessionID());

@@ -86,7 +86,7 @@ public class MainActivity extends GeneralActivity
             Log.i("##77777777##", "--------------------- " + sessionID);
         }
 
-        new ClientSocket(this, new GetRankingCommand(sessionID, userID), userID).execute();
+        new ClientSocket(this, new GetRankingCommand(sessionID, userID), userID, null).execute();
 
         //Initializing Monument fragment
         // Check that the activity is using the layout version with
@@ -157,7 +157,7 @@ public class MainActivity extends GeneralActivity
         } else if (id == R.id.nav_ranking) {
             if(!rankingPressed){
                 Log.i("45674", "112222222222 **************************");
-                new ClientSocket(this, new GetRankingCommand(sessionID, userID), userID).execute();
+                new ClientSocket(this, new GetRankingCommand(sessionID, userID), userID, null).execute();
             }
             rankingPressed = true;
             startRankingFragment();
@@ -207,7 +207,7 @@ public class MainActivity extends GeneralActivity
     public void onListFragmentInteraction(MonumentItem item) {
         if(!item.answered){
             //item.answered = true;
-            new ClientSocket(this, new GetQuizCommand(item.content, sessionID, userID), userID).execute();
+            new ClientSocket(this, new GetQuizCommand(item.content, sessionID, userID), userID, null).execute();
         }
         else {
             //TODO: implement the answered quiz to display to user

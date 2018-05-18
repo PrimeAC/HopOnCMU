@@ -140,7 +140,7 @@ public class QuizActivity extends GeneralActivity {
         else {
             new ClientSocket(this, new SubmitQuizCommand(getIntent().getStringExtra("quizName"),
                     answers, getIntent().getStringExtra("userID"), getIntent().getStringExtra("sessionID")),
-                    getIntent().getStringExtra("userID")).execute();
+                    getIntent().getStringExtra("userID"), null).execute();
         }
     }
 

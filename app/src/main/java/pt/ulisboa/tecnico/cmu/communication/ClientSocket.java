@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 
 import pt.ulisboa.tecnico.cmu.activity.GeneralActivity;
 import pt.ulisboa.tecnico.cmu.communication.command.Command;
@@ -16,7 +17,6 @@ import pt.ulisboa.tecnico.cmu.communication.command.GetRankingCommand;
 import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
 import pt.ulisboa.tecnico.cmu.communication.command.SubmitQuizCommand;
 import pt.ulisboa.tecnico.cmu.communication.command.TicketCommand;
-import pt.ulisboa.tecnico.cmu.communication.response.HelloResponse;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.communication.sealed.SealedCommand;
 import pt.ulisboa.tecnico.cmu.communication.sealed.SealedResponse;
@@ -28,11 +28,13 @@ public class ClientSocket extends AsyncTask<Void, Void, Response> {
     private GeneralActivity generalActivity;
     private Command command;
     private String userID;
+    private SecretKey randomAESKey;
 
-    public ClientSocket(GeneralActivity generalActivity, Command command, String userID) {
+    public ClientSocket(GeneralActivity generalActivity, Command command, String userID, SecretKey randomAESKey) {
         this.generalActivity = generalActivity;
         this.command = command;
         this.userID = userID;
+        this.randomAESKey = randomAESKey;
     }
 
     @Override
@@ -43,42 +45,48 @@ public class ClientSocket extends AsyncTask<Void, Void, Response> {
             server = new Socket("10.0.2.2", 9090);
 
             ObjectOutputStream oos = new ObjectOutputStream(server.getOutputStream());
-            ObjectInputStream ois = new ObjectInputStream(server.getInputStream());
+            ObjectInputStream ois;
+
+            Log.i("Vou enviar uma mensagem", command.toString());
 
             if(command instanceof TicketCommand || command instanceof SignUpCommand){
                 //Send ciphered command
                 SealedCommand sealedCommand = new SealedCommand(userID, SecurityManager
-                        .getServerPublicKeyCipher(Cipher.ENCRYPT_MODE),command);
+                        .getKeyCipher(randomAESKey,Cipher.ENCRYPT_MODE,"AES"),command);
+                sealedCommand.setRandomAESKey(SecurityManager
+                        .getKeyCipher(SecurityManager.serverPubKey,Cipher.ENCRYPT_MODE, "RSA/ECB/PKCS1Padding"),randomAESKey);
                 oos.writeObject(sealedCommand);
 
                 //Receive server response
+                ois  = new ObjectInputStream(server.getInputStream());
                 SealedResponse sealedResponse = (SealedResponse) ois.readObject();
                 //Test integrity
                 if(!SecurityManager.verifyHash(sealedResponse.getDigest(), sealedResponse.getSealedObject())){
-                    throw new SecurityException("Integrity violated.");
+                   throw new SecurityException("Integrity violated.");
                 }
                 response = (Response) sealedResponse.getSealedObject()
-                        .getObject(SecurityManager.getPrivateKeyCipher("KeyPair", Cipher.DECRYPT_MODE));
+                        .getObject(randomAESKey);
             }
             else if(command instanceof GetQuizCommand ||
                     command instanceof GetRankingCommand ||
                     command instanceof SubmitQuizCommand){
                 SealedCommand sealedCommand = new SealedCommand(userID, SecurityManager
-                        .getSecretKeyCipher("SessionKey", Cipher.ENCRYPT_MODE), command);
+                        .getKeyCipher(SecurityManager.sessionKey, Cipher.ENCRYPT_MODE, "AES"), command);
                 oos.writeObject(sealedCommand);
 
+                ois  = new ObjectInputStream(server.getInputStream());
                 SealedResponse sealedResponse = (SealedResponse) ois.readObject();
                 //Test integrity
                 if(!SecurityManager.verifyHash(sealedResponse.getDigest(), sealedResponse.getSealedObject())){
                     throw new SecurityException("Integrity violated.");
                 }
                 response = (Response) sealedResponse.getSealedObject()
-                        .getObject(SecurityManager.getSecretKeyCipher("SessionKey", Cipher.DECRYPT_MODE));
+                        .getObject(SecurityManager.getKeyCipher(SecurityManager.sessionKey, Cipher.DECRYPT_MODE, "AES"));
             }
             else{
                 oos.writeObject(command);
-                HelloResponse helloResponse = (HelloResponse) ois.readObject();
-                SecurityManager.serverPubKey = helloResponse.getServerPubKey();
+                ois  = new ObjectInputStream(server.getInputStream());
+                response =  (Response) ois.readObject();
             }
 
             oos.close();

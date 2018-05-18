@@ -50,22 +50,22 @@ public class CommandHandlerImpl implements CommandHandler {
                         }
                     }
                     ticketResponse = new TicketResponse("OK",
-                            user.getUserID(), getMonuments(user.getUserID()), sessionID);
-                    return new SealedResponse(null, SecurityManager.getCipher(tc.getClientPubKey(),
-                            Cipher.ENCRYPT_MODE, "RSA/ECB/PKCS1Padding"), ticketResponse);
+                            user.getUserID(), getMonuments(user.getUserID()), sessionID);;
+                    return new SealedResponse(null, SecurityManager.getCipher(tc.getRandomAESKey(),
+                            Cipher.ENCRYPT_MODE, "AES"), ticketResponse);
                 }
             }
             //ticket never used (NU), so need to create an account
             ticketResponse = new TicketResponse("NU", null,
                     null,  null);
-            return new SealedResponse(null, SecurityManager.getCipher(tc.getClientPubKey(),
-                    Cipher.ENCRYPT_MODE, "RSA/ECB/PKCS1Padding"), ticketResponse);
+            return new SealedResponse(null, SecurityManager.getCipher(tc.getRandomAESKey(),
+                    Cipher.ENCRYPT_MODE, "AES"), ticketResponse);
         }
         ticketResponse = new TicketResponse("NOK", null,
                 null, null);
 
-        return new SealedResponse(null, SecurityManager.getCipher(tc.getClientPubKey(),
-                Cipher.ENCRYPT_MODE, "RSA/ECB/PKCS1Padding"), ticketResponse);
+        return new SealedResponse(null, SecurityManager.getCipher(tc.getRandomAESKey(),
+                Cipher.ENCRYPT_MODE, "AES"), ticketResponse);
     }
 
     @Override
@@ -76,8 +76,8 @@ public class CommandHandlerImpl implements CommandHandler {
             if (user.getUserID().equals(suc.getUserID())) {
                 //ticket userID already used
                 signUpResponse = new SignUpResponse("NOK", suc.getUserID(), null, null);
-                return new SealedResponse(null, SecurityManager.getCipher(suc.getClientPubKey(),
-                        Cipher.ENCRYPT_MODE, "RSA/ECB/PKCS1Padding"), signUpResponse);
+                return new SealedResponse(null, SecurityManager.getCipher(suc.getRandomAESKey(),
+                        Cipher.ENCRYPT_MODE, "AES"), signUpResponse);
             }
         }
         User user = new User(suc.getUserID(), suc.getTicketCode(), 0);
@@ -91,8 +91,8 @@ public class CommandHandlerImpl implements CommandHandler {
             }
         }
         signUpResponse = new SignUpResponse("OK", user.getUserID(), getMonuments(user.getUserID()), sessionID);
-        return new SealedResponse(suc.getUserID(), SecurityManager.getCipher(suc.getClientPubKey(),
-                Cipher.ENCRYPT_MODE, "RSA/ECB/PKCS1Padding"), signUpResponse);
+        return new SealedResponse(suc.getUserID(), SecurityManager.getCipher(suc.getRandomAESKey(),
+                Cipher.ENCRYPT_MODE, "AES"), signUpResponse);
     }
 
     @Override
@@ -107,14 +107,14 @@ public class CommandHandlerImpl implements CommandHandler {
 	                getQuizResponse = new GetQuizResponse(quiz);
 	                return new SealedResponse(gqc.getUserID(), SecurityManager.getCipher(SecurityManager
 			                .getKeyFromString(Server.getSessionID().get(gqc.getUserID()).getSessionID()),
-			                Cipher.ENCRYPT_MODE,"AES/CBC/PKCS7Padding"),getQuizResponse);
+			                Cipher.ENCRYPT_MODE,"AES"),getQuizResponse);
                 }
             }
         }
 	    getQuizResponse = new GetQuizResponse(null);
 	    return new SealedResponse(gqc.getUserID(), SecurityManager.getCipher(SecurityManager
 					    .getKeyFromString(Server.getSessionID().get(gqc.getUserID()).getSessionID()),
-			    Cipher.ENCRYPT_MODE,"AES/CBC/PKCS7Padding"),getQuizResponse);
+			    Cipher.ENCRYPT_MODE,"AES"),getQuizResponse);
     }
 
     @Override
@@ -129,12 +129,12 @@ public class CommandHandlerImpl implements CommandHandler {
 	        getRankingResponse = new GetRankingResponse(Server.sortByScore(unsortRanking));
 	        return new SealedResponse(grc.getUserID(), SecurityManager.getCipher(SecurityManager
 					        .getKeyFromString(Server.getSessionID().get(grc.getUserID()).getSessionID()),
-			        Cipher.ENCRYPT_MODE,"AES/CBC/PKCS7Padding"),getRankingResponse);
+			        Cipher.ENCRYPT_MODE,"AES"),getRankingResponse);
         }
 	    getRankingResponse = new GetRankingResponse(null);
 	    return new SealedResponse(grc.getUserID(), SecurityManager.getCipher(SecurityManager
 					    .getKeyFromString(Server.getSessionID().get(grc.getUserID()).getSessionID()),
-			    Cipher.ENCRYPT_MODE,"AES/CBC/PKCS7Padding"),getRankingResponse);
+			    Cipher.ENCRYPT_MODE,"AES"),getRankingResponse);
     }
 
     @Override
@@ -160,13 +160,13 @@ public class CommandHandlerImpl implements CommandHandler {
                 submitQuizResponse = new SubmitQuizResponse("OK");
 	            return new SealedResponse(sqc.getUserID(), SecurityManager.getCipher(SecurityManager
 					            .getKeyFromString(Server.getSessionID().get(sqc.getUserID()).getSessionID()),
-			            Cipher.ENCRYPT_MODE,"AES/CBC/PKCS7Padding"),submitQuizResponse);
+			            Cipher.ENCRYPT_MODE,"AES"),submitQuizResponse);
             }
         }
         submitQuizResponse = new SubmitQuizResponse("NOK");
 	    return new SealedResponse(sqc.getUserID(), SecurityManager.getCipher(SecurityManager
 					    .getKeyFromString(Server.getSessionID().get(sqc.getUserID()).getSessionID()),
-			    Cipher.ENCRYPT_MODE,"AES/CBC/PKCS7Padding"),submitQuizResponse);
+			    Cipher.ENCRYPT_MODE,"AES"),submitQuizResponse);
     }
 
     @Override
@@ -179,15 +179,18 @@ public class CommandHandlerImpl implements CommandHandler {
         }
         try {
 	        if (sm.getUserID() == null) {
-		        //Use Server private key
-		        cmd = (Command) sm.getSealedObject().getObject(SecurityManager.getCipher(Server.getServerPrivateKey(),
+	        	//Get RandomAESKey
+		        SecretKey randomAESKey = (SecretKey) sm.getRandomAESKey().getObject(SecurityManager.getCipher(Server.getServerPrivateKey(),
 				        Cipher.DECRYPT_MODE, "RSA/ECB/PKCS1Padding"));
+		        //Use Server private key
+		        cmd = (Command) sm.getSealedObject().getObject(SecurityManager.getCipher(randomAESKey,
+				        Cipher.DECRYPT_MODE, "AES"));
 	        } else {
 		        //Use Client session key
 		        SecretKey sessionKey = SecurityManager.getKeyFromString(Server.getSessionID()
 				        .get(sm.getUserID()).getSessionID());
 		        cmd = (Command) sm.getSealedObject().getObject(SecurityManager.getCipher(sessionKey,
-				        Cipher.DECRYPT_MODE, "AES/CBC/PKCS7Padding"));
+				        Cipher.DECRYPT_MODE, "AES"));
 	        }
         }catch(IOException | ClassNotFoundException | IllegalBlockSizeException | BadPaddingException e){
         	e.printStackTrace();

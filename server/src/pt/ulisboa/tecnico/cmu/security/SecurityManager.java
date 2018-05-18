@@ -1,14 +1,15 @@
 package pt.ulisboa.tecnico.cmu.security;
 
-import java.io.Serializable;
-import java.util.Arrays;
+import pt.ulisboa.tecnico.cmu.util.SerializationUtils;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
-import pt.ulisboa.tecnico.cmu.util.SerializationUtils;
+import java.io.Serializable;
+import java.security.*;
+import java.util.Arrays;
 
 /**
  * Created by afonsocaetano on 15/05/2018.
@@ -26,8 +27,22 @@ public class SecurityManager {
 		}
 	}
 
+
 	public static SecretKey getKeyFromString(String string){
-		return new SecretKeySpec(hashSHA256(string.getBytes()), 0, string.getBytes().length, "AES");
+		byte[] hashmd5 = hashMd5(string.getBytes());
+		return new SecretKeySpec(hashmd5, 0, hashmd5.length, "AES");
+	}
+
+	public static byte[] hashMd5(byte[] content){
+		byte[] result = null;
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(content);
+			result = md.digest();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public static KeyPair generateKeyPair(){
@@ -42,9 +57,20 @@ public class SecurityManager {
 		}
 	}
 
+	public static SecretKey generateRandomAESKey(){
+		try{
+			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+			keyGen.init(256); // for example
+			return keyGen.generateKey();
+		}catch(NoSuchAlgorithmException e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public static boolean verifyHash(byte[] hash, Serializable object){
 		byte[] content = SerializationUtils.serializeObject(object);
-		return Arrays.equals(hash, content);
+		return Arrays.equals(hash, hashSHA256(content));
 	}
 
 

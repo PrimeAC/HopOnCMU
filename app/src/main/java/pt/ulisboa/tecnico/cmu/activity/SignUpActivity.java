@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import javax.crypto.SecretKey;
+
 import pt.ulisboa.tecnico.cmu.R;
 import pt.ulisboa.tecnico.cmu.communication.ClientSocket;
 import pt.ulisboa.tecnico.cmu.communication.command.SignUpCommand;
@@ -97,8 +99,9 @@ public class SignUpActivity extends GeneralActivity {
             Bundle extras = getIntent().getExtras();
             if(extras != null) {
                 String data = extras.getString("ticketCode");
-                new ClientSocket(this, new SignUpCommand(data, username,
-                        SecurityManager.getPublicKey("KeyPair")), username).execute();
+                SecretKey randomAESKey = SecurityManager.generateRandomAESKey();
+                new ClientSocket(this, new SignUpCommand(data, username,randomAESKey),
+                        null, randomAESKey).execute();
             }
         }
 
@@ -159,8 +162,8 @@ public class SignUpActivity extends GeneralActivity {
         SignUpResponse signUpResponse = (SignUpResponse) response;
         switch (signUpResponse.getStatus()) {
             case "OK":
-                //Save session key on keystore
-                SecurityManager.importSecretKey("SessionKey", signUpResponse.getSessionID().getBytes());
+                //Add sessionkey
+                SecurityManager.sessionKey = SecurityManager.getKeyFromString(signUpResponse.getSessionID());
                 dbscore = new UsersScoreDBHandler(this);
                 dbscore.insertName(signUpResponse.getUserID());
                 Intent intent = new Intent(this, MainActivity.class);

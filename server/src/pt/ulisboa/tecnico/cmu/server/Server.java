@@ -73,7 +73,7 @@ public class Server {
 
 				ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
 				Command cmd = (Command) ois.readObject();
-
+				System.out.println("Received message!");
 				Response rsp = cmd.handle(chi);
 
 				ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
