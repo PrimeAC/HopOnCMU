@@ -178,7 +178,6 @@ public class ValidateActivity extends GeneralActivity {
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("userID", ticketResponse.getUserID());
                     intent.putExtra("sessionID", ticketResponse.getSessionID());
-                    Log.i("####", "--------------------- " + ticketResponse.getSessionID());
                     MonumentsListContent.addMonuments(ticketResponse.getMonumentsNames());
                     this.startActivity(intent);
                     finish();
