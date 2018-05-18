@@ -1,13 +1,5 @@
 package pt.ulisboa.tecnico.cmu.server;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-
 import pt.ulisboa.tecnico.cmu.communication.command.Command;
 import pt.ulisboa.tecnico.cmu.communication.response.Response;
 import pt.ulisboa.tecnico.cmu.data.Question;
@@ -15,6 +7,15 @@ import pt.ulisboa.tecnico.cmu.data.Quiz;
 import pt.ulisboa.tecnico.cmu.data.SessionID;
 import pt.ulisboa.tecnico.cmu.data.User;
 import pt.ulisboa.tecnico.cmu.security.SecurityManager;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 
