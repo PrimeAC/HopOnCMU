@@ -1,5 +1,5 @@
-# Project-CMU
-Repository for the project of the Mobile and Ubiquitous Computing class.
+# HopOnCMU
+Repository for the project of the Ubiquitous and Mobile Computing class.
 
 To run the server go to the src folder and execute:
 ```
